@@ -6,32 +6,35 @@ import { TRAVEL_SERVICES } from '../constants';
 interface TravelScreenProps {
   navigateTo: (page: Page) => void;
   viewTravelOnMap: (service: TravelService) => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
-const TravelScreen: React.FC<TravelScreenProps> = ({ navigateTo, viewTravelOnMap }) => {
+const TravelScreen: React.FC<TravelScreenProps> = ({ navigateTo, viewTravelOnMap, theme, toggleTheme }) => {
   return (
-    <div className="flex flex-col h-full bg-[#F1F3F6] dark:bg-gray-900">
-      <Header title="Travel Routes" onBack={() => navigateTo(Page.Home)} />
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
+      <Header title="Travel Routes" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} />
       
       <div className="flex-grow overflow-y-auto p-4 space-y-3">
-        <p className="text-sm text-gray-600 dark:text-gray-400 px-2 pb-2">Select a service to view the route on the map.</p>
-        {TRAVEL_SERVICES.map(service => (
+        <p className="text-sm text-gray-600 dark:text-gray-400 px-2 pb-2 animate-fadeIn">Select a service to view the route on the map.</p>
+        {TRAVEL_SERVICES.map((service, index) => (
           <button 
             key={service.id} 
             onClick={() => viewTravelOnMap(service)}
-            className="w-full bg-white dark:bg-gray-800 p-4 rounded-xl shadow flex items-center justify-between text-left transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95"
+            className="w-full bg-white dark:bg-gray-800 p-4 rounded-xl shadow flex items-center justify-between text-left transition-all duration-300 ease-in-out hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md active:scale-95 animate-fadeInUp"
+            style={{ animationDelay: `${index * 100}ms` }}
           >
             <div className="flex items-center">
-                <div className="p-3 bg-red-100 dark:bg-gray-700 rounded-full mr-4 text-[#F95C5C]">
+                <div className="p-3 bg-green-100 dark:bg-red-900/50 rounded-full mr-4 text-green-500 dark:text-red-400">
                     {service.type === 'Bus Station' && <BusIcon />}
                     {service.type === 'Train Station' && <TrainIcon />}
                 </div>
                 <div>
-                    <h3 className="font-bold text-gray-800 dark:text-gray-100">{service.name}</h3>
+                    <h3 className="font-bold text-gray-800 dark:text-white">{service.name}</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{service.type}</p>
                 </div>
             </div>
-             <div className="text-gray-400 dark:text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></div>
+             <div className="text-gray-400"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></div>
           </button>
         ))}
       </div>

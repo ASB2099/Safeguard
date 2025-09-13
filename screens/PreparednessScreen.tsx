@@ -4,14 +4,18 @@ import Header from '../components/Header';
 
 interface PreparednessScreenProps {
   navigateTo: (page: Page) => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
-// FIX: Moved icon definitions before disasterData to prevent 'used before declaration' errors.
 // Icons for disasters and UI
 const EarthquakeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16M8 4l4 4 4-4M8 20l4-4 4 4" /></svg>;
 const FloodIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-3.333 4-8 4-8 4s4.667 0 8 4c3.333-4 8-4 8-4s-4.667 0-8-4zm0 0V4m0 4c-3.333 4-8 4-8 4s4.667 0 8 4c3.333-4 8-4 8-4s-4.667 0-8-4zm0 0v4" /></svg>;
 const FireIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2c2.5 2.5 4 6.5 4 8.5 0 2.5-2 4.5-4 4.5s-4-2-4-4.5c0-2 1.5-6 4-8.5z" /><path d="M8.5 14.5c0 2.5 2 4.5 3.5 4.5s3.5-2 3.5-4.5" /></svg>;
 const StormIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>;
+const TsunamiIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12c0-1.1.9-2 2-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm0 4c0-1.1.9-2 2-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm0-8c0-1.1.9-2 2-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" /></svg>;
+const LandslideIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2 16l4-4 4 4 4-4 4 4 4-4" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2 20l4-4 4 4 4-4 4 4 4-4" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4L2 14h20L12 4z" /></svg>;
+const VolcanoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2L2 22h20L12 2z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m-2 2h4" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 2c.5 1 1.5 2 2.5 2s2-1 2.5-2" /></svg>;
 const ChevronIcon: React.FC<{ isOpen: boolean }> = ({ isOpen }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -87,9 +91,60 @@ const disasterData = [
         'Trim trees and branches that could fall on your home.',
     ],
   },
+  {
+    id: 'tsunami',
+    name: 'Tsunami',
+    icon: <TsunamiIcon />,
+    during: [
+      'If you feel an earthquake near a coast, drop, cover, hold on, then evacuate to high ground.',
+      'Move inland as far as possible.',
+      'Follow official evacuation orders immediately.',
+      'Do not return to the coast until authorities say it is safe.',
+    ],
+    precautions: [
+      'Know your community\'s tsunami warning system and evacuation routes.',
+      'Practice your evacuation route.',
+      'If you are new to an area, ask about the local tsunami risk.',
+      'Prepare a "go-bag" with essentials.',
+    ],
+  },
+  {
+    id: 'landslide',
+    name: 'Landslide',
+    icon: <LandslideIcon />,
+    during: [
+      'Evacuate immediately if it is safe to do so.',
+      'Listen for unusual sounds that might indicate moving debris.',
+      'Move away from the path of a landslide or debris flow.',
+      'If escape is not possible, curl into a tight ball and protect your head.',
+    ],
+    precautions: [
+      'Learn about the landslide risk in your area.',
+      'Watch for changes in landscape and water drainage.',
+      'Have a geotechnical expert assess your property if you are in a high-risk zone.',
+      'Plant ground cover on slopes and build retaining walls.',
+    ],
+  },
+  {
+    id: 'volcano',
+    name: 'Volcanic Eruption',
+    icon: <VolcanoIcon />,
+    during: [
+      'Follow evacuation orders from authorities immediately.',
+      'Avoid low-lying areas, and areas downwind of the volcano.',
+      'Protect yourself from falling ash by wearing long sleeves, goggles, and a dust mask.',
+      'Stay indoors and close all windows and doors.',
+    ],
+    precautions: [
+      'Know your community\'s warning signals and evacuation plans.',
+      'Prepare an emergency kit with goggles and dust masks for everyone.',
+      'Understand the risk of mudflows (lahars) which can be very dangerous.',
+      'Have a plan for your pets and livestock.',
+    ],
+  },
 ];
 
-const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo }) => {
+const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, theme, toggleTheme }) => {
   const [openId, setOpenId] = useState<string | null>(null);
 
   const toggleAccordion = (id: string) => {
@@ -97,16 +152,20 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo }) =
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#F1F3F6] dark:bg-gray-900">
-      <Header title="Disaster Preparedness" onBack={() => navigateTo(Page.Home)} />
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
+      <Header title="Disaster Preparedness" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} />
       
       <div className="flex-grow overflow-y-auto p-4 space-y-3">
-        <p className="text-sm text-gray-600 dark:text-gray-400 px-2 pb-2">
+        <p className="text-sm text-gray-600 dark:text-gray-400 px-2 pb-2 animate-fadeIn">
             Stay safe by learning what to do before and during common natural disasters.
         </p>
         
-        {disasterData.map((disaster) => (
-          <div key={disaster.id} className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+        {disasterData.map((disaster, index) => (
+          <div 
+            key={disaster.id} 
+            className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden animate-fadeInUp"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
             <button
               onClick={() => toggleAccordion(disaster.id)}
               className="w-full flex items-center justify-between p-4 text-left"
@@ -114,25 +173,25 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo }) =
               aria-controls={`content-${disaster.id}`}
             >
               <div className="flex items-center">
-                <div className="mr-4 text-red-500">{disaster.icon}</div>
-                <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">{disaster.name}</h3>
+                <div className="mr-4 text-green-500 dark:text-red-500">{disaster.icon}</div>
+                <h3 className="font-bold text-lg text-gray-800 dark:text-white">{disaster.name}</h3>
               </div>
               <ChevronIcon isOpen={openId === disaster.id} />
             </button>
             <div
               id={`content-${disaster.id}`}
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${openId === disaster.id ? 'max-h-96' : 'max-h-0'}`}
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${openId === disaster.id ? 'max-h-[500px]' : 'max-h-0'}`}
             >
               <div className="p-4 pt-0">
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
                   <h4 className="font-semibold text-md text-gray-700 dark:text-gray-200 mb-2">What to do DURING:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-300">
+                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400">
                     {disaster.during.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>
                 </div>
                 <div className="mt-4">
                   <h4 className="font-semibold text-md text-gray-700 dark:text-gray-200 mb-2">Precautions to take BEFORE:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-300">
+                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400">
                     {disaster.precautions.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>
                 </div>

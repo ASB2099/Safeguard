@@ -1,29 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Safeguard</title>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-      }
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Safeguard - Your Travel Companion</title>
   <script type="importmap">
-{
-  "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.1.1/",
-    "react": "https://aistudiocdn.com/react@^19.1.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.19.0"
+  {
+    "imports": {
+      "@google/genai": "https://aistudiocdn.com/@google/genai@^1.19.0",
+      "react/": "https://aistudiocdn.com/react@^19.1.1/",
+      "react": "https://aistudiocdn.com/react@^19.1.1",
+      "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/"
+    }
   }
-}
-</script>
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          },
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+            fadeInUp: 'fadeInUp 0.5s ease-in-out forwards',
+            pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'pulse-bg': 'pulse-bg 2s infinite',
+            scaleIn: 'scaleIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
+            popIn: 'popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards',
+            glow: 'glow 2s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: 0 },
+              '100%': { opacity: 1 },
+            },
+            fadeInUp: {
+              '0%': { opacity: 0, transform: 'translateY(20px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' },
+            },
+            'pulse-bg': {
+              '0%, 100%': { backgroundColor: 'rgba(239, 68, 68, 0.1)' },
+              '50%': { backgroundColor: 'rgba(239, 68, 68, 0.2)' },
+            },
+            scaleIn: {
+              '0%': { transform: 'scale(0.8)', opacity: 0 },
+              '100%': { transform: 'scale(1)', opacity: 1 },
+            },
+            popIn: {
+              '0%': { transform: 'scale(0.5)', opacity: 0 },
+              '100%': { transform: 'scale(1)', opacity: 1 },
+            },
+            glow: {
+                'from': { boxShadow: '0 0 10px #f87171, 0 0 20px #f87171, 0 0 30px #ef4444' },
+                'to': { boxShadow: '0 0 20px #f87171, 0 0 30px #ef4444, 0 0 40px #dc2626' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+        cursor: none;
+    }
+    .custom-cursor {
+        /* Styles for custom cursor will be handled by the component */
+    }
+    .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
+    .animate-fadeInUp { animation: fadeInUp 0.5s ease-in-out forwards; }
+    .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .animate-pulse-bg { animation: pulse-bg 2s infinite; }
+    .dark .animate-pulse-bg {
+        animation-name: pulse-bg-dark;
+    }
+    @keyframes pulse-bg-dark {
+        '0%, 100%': { backgroundColor: 'rgba(55, 65, 81, 0.2)' };
+        '50%': { backgroundColor: 'rgba(55, 65, 81, 0.4)' };
+    }
+    .animate-scaleIn { animation: scaleIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .animate-popIn { animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; }
+    .animate-glow { animation: glow 2s ease-in-out infinite alternate; }
+  </style>
 </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+<body class="bg-gray-200 dark:bg-gray-800">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

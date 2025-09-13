@@ -5,9 +5,11 @@ import { getBotResponse } from '../services/geminiService';
 
 interface ChatScreenProps {
   navigateTo: (page: Page) => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
-const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo }) => {
+const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -88,33 +90,33 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo }) => {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-[#F1F3F6] dark:bg-gray-900">
-      <Header title="Customer Support" onBack={() => navigateTo(Page.Home)} />
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
+      <Header title="Customer Support" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} />
       
       <div className="bg-white/50 dark:bg-black/20 text-center p-2">
-        <p className="text-xs text-gray-600 dark:text-gray-300">Email: support@safeguard.app | Phone: +1 (555) 123-4567</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400">Email: support@safeguard.app | Phone: +1 (555) 123-4567</p>
       </div>
 
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fadeInUp`}>
             <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
               msg.sender === 'user' 
-                ? 'bg-[#F95C5C] text-white rounded-br-none' 
-                : 'bg-white text-gray-800 dark:bg-gray-700 dark:text-gray-100 rounded-bl-none shadow'
+                ? 'bg-green-500 dark:bg-red-500 text-white rounded-br-none' 
+                : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none shadow'
             }`}>
               <p className="text-sm">{msg.text}</p>
-              <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-gray-200' : 'text-gray-400'} text-right`}>{msg.timestamp}</p>
+              <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-gray-200 dark:text-gray-300' : 'text-gray-400 dark:text-gray-400'} text-right`}>{msg.timestamp}</p>
             </div>
           </div>
         ))}
         {isLoading && (
-            <div className="flex justify-start">
+            <div className="flex justify-start animate-fadeInUp">
                 <div className="bg-white dark:bg-gray-700 text-gray-800 rounded-2xl rounded-bl-none p-3 shadow">
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-gray-400 dark:bg-gray-300 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-                        <div className="w-2 h-2 bg-gray-400 dark:bg-gray-300 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                        <div className="w-2 h-2 bg-gray-400 dark:bg-gray-300 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
                     </div>
                 </div>
             </div>
@@ -122,9 +124,9 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo }) => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-4 py-2">
-          <button onClick={startCamera} className="text-gray-500 dark:text-gray-400 hover:text-[#F95C5C]">
+      <div className="p-4 bg-white dark:bg-black border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2">
+          <button onClick={startCamera} className="text-gray-500 hover:text-green-500 dark:hover:text-red-400">
             <CameraIcon />
           </button>
           <input
@@ -133,17 +135,17 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo }) => {
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Write a message..."
-            className="flex-grow bg-transparent focus:outline-none mx-3 text-sm text-gray-800 dark:text-white"
+            className="flex-grow bg-transparent focus:outline-none mx-3 text-sm text-gray-800 dark:text-gray-200"
             disabled={isLoading}
           />
-          <button onClick={handleSend} className="bg-[#F95C5C] text-white rounded-full p-2 hover:bg-red-500 disabled:bg-gray-300 transition-colors">
+          <button onClick={handleSend} className="bg-green-500 dark:bg-red-500 text-white rounded-full p-2 hover:bg-green-600 dark:hover:bg-red-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 transition-colors">
             <SendIcon />
           </button>
         </div>
       </div>
       
       {isCameraOpen && (
-        <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-50">
+        <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-50 animate-fadeIn">
           <video ref={videoRef} autoPlay className="w-full h-auto max-h-[80%] rounded-lg" />
           <button onClick={stopCamera} className="mt-4 bg-red-600 text-white px-6 py-2 rounded-full font-bold">Close Camera</button>
         </div>

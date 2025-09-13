@@ -5,9 +5,11 @@ import { USER_LOCATION, NEARBY_SERVICES } from '../constants';
 
 interface SOSScreenProps {
   navigateTo: (page: Page) => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
-const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo }) => {
+const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme }) => {
   // Combine user location and service locations for bounding box calculation
   const allLocations = [USER_LOCATION, ...NEARBY_SERVICES.map(s => s.location)];
 
@@ -27,25 +29,25 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo }) => {
   const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${USER_LOCATION.lat},${USER_LOCATION.lng}`;
 
   return (
-    <div className="flex flex-col h-full bg-red-50 dark:bg-gray-900">
-      <Header title="SOS Activated" onBack={() => navigateTo(Page.Home)} />
+    <div className="flex flex-col h-full bg-green-50 dark:bg-gray-900 animate-pulse-bg">
+      <Header title="SOS Activated" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} />
       
-      <div className="flex-grow relative bg-gray-300 dark:bg-gray-700 overflow-hidden">
+      <div className="flex-grow relative bg-gray-300 overflow-hidden">
         <iframe
           title="SOS Map with user and nearby services"
           src={mapUrl}
           className="absolute w-full h-full border-0"
         />
          <div className="absolute top-2 right-2 bg-white/80 dark:bg-black/80 p-2 rounded-lg shadow-lg text-xs max-w-[150px]">
-            <p className="font-bold text-red-600 dark:text-red-400">Your Location (Marker)</p>
+            <p className="font-bold text-green-600 dark:text-red-500">Your Location (Marker)</p>
             <p className="text-gray-700 dark:text-gray-300">Other icons are nearby services visible on the map.</p>
         </div>
       </div>
       
-      <div className="bg-red-600 text-white p-4">
+      <div className="bg-green-600 dark:bg-red-600 text-white p-4">
         <div className="text-center">
             <h3 className="font-bold text-lg">Help is on the way!</h3>
-            <p className="text-sm text-red-100">Nearby services have been informed.</p>
+            <p className="text-sm text-green-100 dark:text-red-100">Nearby services have been informed.</p>
         </div>
         <div className="mt-4">
             <h4 className="font-semibold text-sm mb-2 text-center">Notified Services:</h4>
