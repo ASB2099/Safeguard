@@ -5,7 +5,7 @@ import Header from '../components/Header';
 interface PreparednessScreenProps {
   navigateTo: (page: Page) => void;
   theme: 'light' | 'dark';
-  toggleTheme: () => void;
+  toggleTheme: (event: React.MouseEvent) => void;
 }
 
 // Icons for disasters and UI
@@ -152,46 +152,46 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, the
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-transparent">
       <Header title="Disaster Preparedness" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} />
       
       <div className="flex-grow overflow-y-auto p-4 space-y-3">
-        <p className="text-sm text-gray-600 dark:text-gray-400 px-2 pb-2 animate-fadeIn">
+        <p className="text-sm text-black/70 dark:text-white/70 px-2 pb-2 animate-fadeIn">
             Stay safe by learning what to do before and during common natural disasters.
         </p>
         
         {disasterData.map((disaster, index) => (
           <div 
             key={disaster.id} 
-            className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden animate-fadeInUp"
+            className="group bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 dark:border-red-500/30 rounded-xl shadow-colored-md overflow-hidden animate-fadeInUp transition-all duration-500"
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <button
               onClick={() => toggleAccordion(disaster.id)}
-              className="w-full flex items-center justify-between p-4 text-left"
+              className="flippable-button w-full flex items-center justify-between p-4 text-left"
               aria-expanded={openId === disaster.id}
               aria-controls={`content-${disaster.id}`}
             >
               <div className="flex items-center">
-                <div className="mr-4 text-green-500 dark:text-red-500">{disaster.icon}</div>
-                <h3 className="font-bold text-lg text-gray-800 dark:text-white">{disaster.name}</h3>
+                <div className="mr-4 text-green-500 dark:text-red-500 transition-transform duration-300 group-hover:scale-110">{disaster.icon}</div>
+                <h3 className="font-bold text-lg text-black dark:text-white">{disaster.name}</h3>
               </div>
               <ChevronIcon isOpen={openId === disaster.id} />
             </button>
             <div
               id={`content-${disaster.id}`}
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${openId === disaster.id ? 'max-h-[500px]' : 'max-h-0'}`}
+              className={`transition-all duration-500 ease-in-out overflow-hidden ${openId === disaster.id ? 'max-h-[500px]' : 'max-h-0'}`}
             >
-              <div className="p-4 pt-0">
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                  <h4 className="font-semibold text-md text-gray-700 dark:text-gray-200 mb-2">What to do DURING:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400">
+              <div className="p-4 pt-0 text-black dark:text-white">
+                <div className="border-t border-green-200/50 dark:border-red-800/50 pt-4">
+                  <h4 className="font-semibold text-md text-green-800 dark:text-red-200 mb-2">What to do DURING:</h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-black/80 dark:text-white/80">
                     {disaster.during.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>
                 </div>
                 <div className="mt-4">
-                  <h4 className="font-semibold text-md text-gray-700 dark:text-gray-200 mb-2">Precautions to take BEFORE:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                  <h4 className="font-semibold text-md text-green-800 dark:text-red-200 mb-2">Precautions to take BEFORE:</h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-black/80 dark:text-white/80">
                     {disaster.precautions.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>
                 </div>

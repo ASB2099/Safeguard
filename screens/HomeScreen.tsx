@@ -5,61 +5,54 @@ import Header from '../components/Header';
 interface HomeScreenProps {
   navigateTo: (page: Page) => void;
   theme: 'light' | 'dark';
-  toggleTheme: () => void;
+  toggleTheme: (event: React.MouseEvent) => void;
 }
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme }) => {
 
   const features = [
-    { name: 'AI Assistant', page: Page.Chat, icon: <ChatIcon />, color: 'green' },
-    { name: 'My Location', page: Page.Location, icon: <LocationIcon />, color: 'blue' },
-    { name: 'Nearby Services', page: Page.Services, icon: <ServicesIcon />, color: 'purple' },
-    { name: 'Weather', page: Page.Weather, icon: <WeatherIcon />, color: 'yellow' },
-    { name: 'Travel Routes', page: Page.Travel, icon: <TravelIcon />, color: 'indigo' },
-    { name: 'Disaster Prep', page: Page.Preparedness, icon: <PreparednessIcon />, color: 'teal' },
+    { name: 'AI Assistant', page: Page.Chat, icon: <ChatIcon /> },
+    { name: 'My Location', page: Page.Location, icon: <LocationIcon /> },
+    { name: 'Nearby Services', page: Page.Services, icon: <ServicesIcon /> },
+    { name: 'Weather', page: Page.Weather, icon: <WeatherIcon /> },
+    { name: 'Travel Routes', page: Page.Travel, icon: <TravelIcon /> },
+    { name: 'Disaster Prep', page: Page.Preparedness, icon: <PreparednessIcon /> },
   ];
 
-  const sosFeature = { name: 'Emergency SOS', page: Page.SOS, icon: <SOSIcon />, color: 'red' };
+  const sosFeature = { name: 'Emergency SOS', page: Page.SOS, icon: <SOSIcon /> };
   
-  // A helper function to map colors to Tailwind classes to ensure they are purged correctly.
-  const iconColorClasses = (color: string) => {
-    switch (color) {
-        case 'green': return 'bg-green-100 text-green-600 dark:bg-red-900/50 dark:text-red-400';
-        case 'blue': return 'bg-blue-100 text-blue-600 dark:bg-red-900/50 dark:text-red-400';
-        case 'purple': return 'bg-purple-100 text-purple-600 dark:bg-red-900/50 dark:text-red-400';
-        case 'yellow': return 'bg-yellow-100 text-yellow-600 dark:bg-red-900/50 dark:text-red-400';
-        case 'indigo': return 'bg-indigo-100 text-indigo-600 dark:bg-red-900/50 dark:text-red-400';
-        case 'teal': return 'bg-teal-100 text-teal-600 dark:bg-red-900/50 dark:text-red-400';
-        default: return 'bg-gray-100 text-gray-600 dark:bg-red-900/50 dark:text-red-400';
-    }
+  const iconColorClasses = () => {
+    return 'bg-green-100/80 text-green-600 dark:bg-red-900/50 dark:text-red-400';
   }
 
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
-      <Header title="Dashboard" theme={theme} toggleTheme={toggleTheme} />
+    <div className="flex flex-col h-full bg-transparent">
+      <Header title="Dashboard" theme={theme} toggleTheme={toggleTheme} showDateTime />
       
-      <div className="flex-grow overflow-y-auto p-4">
-        <div className="grid grid-cols-2 gap-4">
-          {features.map((feature, index) => (
-            <button
-              key={feature.name}
-              onClick={() => navigateTo(feature.page)}
-              className={`p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md text-center transition-all duration-300 ease-in-out hover:shadow-lg active:scale-95 animate-fadeInUp`}
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className={`mx-auto mb-2 w-12 h-12 flex items-center justify-center rounded-full ${iconColorClasses(feature.color)}`}>
-                {feature.icon}
-              </div>
-              <h3 className="font-semibold text-sm text-gray-800 dark:text-white">{feature.name}</h3>
-            </button>
-          ))}
+      <div className="flex-grow flex flex-col p-4 gap-4">
+        <div className="flex-grow">
+          <div className="h-full grid grid-cols-2 md:grid-cols-3 gap-4">
+            {features.map((feature, index) => (
+              <button
+                key={feature.name}
+                onClick={() => navigateTo(feature.page)}
+                className={`h-full flex flex-col items-center justify-center flippable-button group p-4 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-2xl shadow-colored-md transition-all duration-500 ease-in-out hover:shadow-colored-lg active:scale-95 animate-fadeInUp border border-white/30 dark:border-red-500/30 hover:bg-white/30 dark:hover:bg-red-500/20`}
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className={`mx-auto mb-2 w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 ${iconColorClasses()}`}>
+                  {feature.icon}
+                </div>
+                <h3 className="font-semibold text-sm text-center text-black dark:text-white transition-colors duration-500">{feature.name}</h3>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-6 animate-fadeInUp" style={{ animationDelay: `${features.length * 100}ms` }}>
+        <div className="animate-fadeInUp" style={{ animationDelay: `${features.length * 100}ms` }}>
             <button 
                 onClick={() => navigateTo(sosFeature.page)}
-                className={`w-full p-6 bg-red-500 rounded-2xl shadow-lg flex items-center justify-center text-white font-bold text-xl transition-transform active:scale-95 animate-pulse`}
+                className={`w-full p-6 bg-green-500 dark:bg-red-500 rounded-2xl shadow-colored-lg flex items-center justify-center text-white font-bold text-xl transition-transform active:scale-95 animate-pulse transition-colors duration-500`}
             >
                 <div className="mr-3">{sosFeature.icon}</div>
                 {sosFeature.name}

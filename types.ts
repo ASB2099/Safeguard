@@ -1,3 +1,4 @@
+
 // FIX: Removed the self-import of `Page` which caused a conflict with the local enum declaration.
 export enum Page {
   Splash,
@@ -24,7 +25,7 @@ export interface Message {
 export interface Service {
     id: string;
     name: string;
-    type: 'Hospital' | 'Police' | 'Restaurant' | 'Hotel' | 'Bus Station' | 'Train Station';
+    type: string;
     location: { lat: number; lng: number };
 }
 

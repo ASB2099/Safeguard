@@ -33,11 +33,11 @@ const CustomCursor: React.FC = () => {
   }, []);
 
   return (
-    <div className={`custom-cursor hidden md:block ${isHovering ? 'visible' : 'invisible'}`}>
+    <div className={`custom-cursor ${isHovering ? 'visible' : 'invisible'}`}>
       <div
-        className={`fixed top-0 left-0 pointer-events-none z-[9999] rounded-full mix-blend-difference transition-transform duration-300 ease-out ${
+        className={`fixed top-0 left-0 pointer-events-none z-[9999] rounded-full transition-all duration-300 ease-out ${
           isPointer ? 'scale-150 border-2' : 'scale-100 border'
-        } border-white`}
+        } border-green-500 dark:border-red-500`}
         style={{
           transform: `translate(${position.x}px, ${position.y}px) translate(-50%, -50%)`,
           width: '40px',
@@ -45,7 +45,7 @@ const CustomCursor: React.FC = () => {
         }}
       />
       <div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] rounded-full bg-white mix-blend-difference transition-transform duration-100 ease-out"
+        className="fixed top-0 left-0 pointer-events-none z-[9999] rounded-full bg-green-500 dark:bg-red-500 transition-all duration-100 ease-out"
         style={{
           transform: `translate(${position.x}px, ${position.y}px) translate(-50%, -50%)`,
           width: '8px',

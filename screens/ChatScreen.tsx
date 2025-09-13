@@ -6,11 +6,18 @@ import { getBotResponse } from '../services/geminiService';
 interface ChatScreenProps {
   navigateTo: (page: Page) => void;
   theme: 'light' | 'dark';
-  toggleTheme: () => void;
+  toggleTheme: (event: React.MouseEvent) => void;
 }
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: Date.now(),
+      text: "Hello! I'm Safeguard, your personal travel assistant. How can I help you today?",
+      sender: 'bot',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    }
+  ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -36,36 +43,21 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
   const handleSend = async () => {
     if (input.trim() === '' || isLoading) return;
     const userInput = input;
+    const isFirstMessage = messages.length === 1;
+    
     setInput('');
     addMessage(userInput, 'user');
     setIsLoading(true);
     
     try {
-      const isFirstMessage = messages.length === 0;
       const botResponse = await getBotResponse(userInput, isFirstMessage);
       addMessage(botResponse, 'bot');
-    } catch (error) {
-      addMessage("I'm sorry, I encountered an error. Please try again.", 'bot');
+    } catch (error: any) {
+      addMessage(error.message, 'bot');
     } finally {
       setIsLoading(false);
     }
   };
-  
-   useEffect(() => {
-    const sendInitialGreeting = async () => {
-      setIsLoading(true);
-      try {
-        const botResponse = await getBotResponse("Initial Greeting", true);
-        addMessage(botResponse, 'bot');
-      } catch (error) {
-        addMessage("Hello! I'm having some trouble connecting. How can I help?", 'bot');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    sendInitialGreeting();
-     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const startCamera = useCallback(async () => {
     try {
@@ -90,33 +82,33 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-transparent">
       <Header title="Customer Support" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} />
       
-      <div className="bg-white/50 dark:bg-black/20 text-center p-2">
-        <p className="text-xs text-gray-600 dark:text-gray-400">Email: support@safeguard.app | Phone: +1 (555) 123-4567</p>
+      <div className="bg-green-50/60 dark:bg-red-900/10 backdrop-blur-sm text-center p-2 transition-colors duration-500">
+        <p className="text-xs text-green-800 dark:text-red-200/80">Email: support@safeguard.app | Phone: +1 (555) 123-4567</p>
       </div>
 
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fadeInUp`}>
-            <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+            <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl transition-colors duration-500 ${
               msg.sender === 'user' 
-                ? 'bg-green-500 dark:bg-red-500 text-white rounded-br-none' 
-                : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none shadow'
+                ? 'bg-green-500 dark:bg-red-500 text-white rounded-br-none shadow-colored-md' 
+                : 'bg-white/70 dark:bg-black/30 backdrop-blur-md text-black dark:text-white rounded-bl-none shadow-colored-md'
             }`}>
               <p className="text-sm">{msg.text}</p>
-              <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-gray-200 dark:text-gray-300' : 'text-gray-400 dark:text-gray-400'} text-right`}>{msg.timestamp}</p>
+              <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-green-100 dark:text-red-100' : 'text-black/70 dark:text-red-200/70'} text-right`}>{msg.timestamp}</p>
             </div>
           </div>
         ))}
         {isLoading && (
             <div className="flex justify-start animate-fadeInUp">
-                <div className="bg-white dark:bg-gray-700 text-gray-800 rounded-2xl rounded-bl-none p-3 shadow">
+                <div className="bg-white/70 dark:bg-black/30 backdrop-blur-md rounded-2xl rounded-bl-none p-3 shadow-colored-md transition-colors duration-500">
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                        <div className="w-2 h-2 bg-green-400 dark:bg-red-400 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                        <div className="w-2 h-2 bg-green-400 dark:bg-red-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-2 h-2 bg-green-400 dark:bg-red-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
                     </div>
                 </div>
             </div>
@@ -124,9 +116,9 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 bg-white dark:bg-black border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2">
-          <button onClick={startCamera} className="text-gray-500 hover:text-green-500 dark:hover:text-red-400">
+      <div className="p-4 bg-white/60 dark:bg-black/60 backdrop-blur-md border-t border-green-200/50 dark:border-red-900/50 transition-colors duration-500">
+        <div className="flex items-center bg-white/50 dark:bg-black/20 rounded-full px-4 py-2 transition-colors duration-500 border border-white/30 dark:border-red-500/30">
+          <button onClick={startCamera} className="text-green-600 hover:text-green-700 dark:text-red-300 dark:hover:text-red-400">
             <CameraIcon />
           </button>
           <input
@@ -135,10 +127,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Write a message..."
-            className="flex-grow bg-transparent focus:outline-none mx-3 text-sm text-gray-800 dark:text-gray-200"
+            className="flex-grow bg-transparent focus:outline-none mx-3 text-sm text-black dark:text-white placeholder-black/50 dark:placeholder-white/50"
             disabled={isLoading}
           />
-          <button onClick={handleSend} className="bg-green-500 dark:bg-red-500 text-white rounded-full p-2 hover:bg-green-600 dark:hover:bg-red-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 transition-colors">
+          <button onClick={handleSend} className="bg-green-500 dark:bg-red-500 text-white rounded-full p-2 hover:bg-green-600 dark:hover:bg-red-600 disabled:bg-green-200 dark:disabled:bg-red-800 transition-colors duration-500">
             <SendIcon />
           </button>
         </div>
