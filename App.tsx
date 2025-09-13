@@ -14,6 +14,7 @@ import TravelMapScreen from './screens/TravelMapScreen';
 import SOSScreen from './screens/SOSScreen';
 import PreparednessScreen from './screens/PreparednessScreen';
 import CustomCursor from './components/CustomCursor';
+import RippleEffect from './components/RippleEffect';
 import { USER_LOCATION } from './constants';
 
 function App() {
@@ -162,6 +163,7 @@ function App() {
   return (
     <div className="h-screen w-screen font-sans">
       <CustomCursor />
+      <RippleEffect />
       <div className="h-full w-full max-w-lg mx-auto bg-white/60 dark:bg-black/60 backdrop-blur-xl shadow-2xl overflow-hidden relative transition-colors duration-500 md:max-w-3xl lg:max-w-5xl">
         {renderPage()}
       </div>

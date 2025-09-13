@@ -15,7 +15,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigateTo }) => {
   }, [navigateTo]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-gradient-to-br from-green-400 to-green-600 dark:from-black dark:to-red-700 text-white animate-fadeIn transition-all duration-500">
+    <div className="flex flex-col items-center justify-center h-full bg-gradient-to-br from-green-400 to-green-600 dark:from-black dark:to-green-700 text-white animate-fadeIn transition-all duration-500">
       <div className="text-center animate-fadeInUp">
         <div className="flex justify-center mb-4">
             <ShieldIcon />

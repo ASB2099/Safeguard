@@ -12,10 +12,10 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title, onBack, children, theme, toggleTheme, showDateTime = false }) => {
   return (
-    <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-5 pt-8 flex items-center justify-between z-10 border-b border-green-200/50 dark:border-red-900/50 transition-colors duration-500">
+    <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-5 pt-8 flex items-center justify-between z-10 border-b border-green-200/50 dark:border-green-900/50 transition-colors duration-500">
       <div className="flex items-center space-x-4">
         {onBack && (
-          <button onClick={onBack} className="text-green-600 dark:text-red-500 rounded-full p-1 hover:bg-black/10 dark:hover:bg-red-500/10 transition-colors duration-300">
+          <button onClick={onBack} className="text-green-600 dark:text-green-500 rounded-full p-1 hover:bg-black/10 dark:hover:bg-green-500/10 transition-colors duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ title, onBack, children, theme, toggleT
         {children}
         {showDateTime && <DateTimeDisplay />}
         {toggleTheme && theme && (
-            <button onClick={(e) => toggleTheme(e)} className="p-2 rounded-full text-green-700 dark:text-red-300 hover:bg-black/10 dark:hover:bg-red-500/10 transition-colors duration-300">
+            <button onClick={(e) => toggleTheme(e)} className="p-2 rounded-full text-green-700 dark:text-green-300 hover:bg-black/10 dark:hover:bg-green-500/10 transition-colors duration-300">
                 {theme === 'light' ? <MoonIcon /> : <SunIcon />}
             </button>
         )}

@@ -71,26 +71,26 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, u
                 className="absolute w-full h-full border-0"
                 />
                 <div className="absolute top-2 right-2 bg-white/80 dark:bg-black/80 backdrop-blur-sm p-2 rounded-lg shadow-lg text-xs max-w-[150px]">
-                    <p className="font-bold text-green-600 dark:text-red-500">Your Location (Marker)</p>
+                    <p className="font-bold text-green-600 dark:text-green-500">Your Location (Marker)</p>
                     <p className="text-gray-700 dark:text-white/80">Other icons are nearby services visible on the map.</p>
                 </div>
             </>
         )}
       </div>
       
-      <div className="bg-green-600 dark:bg-red-600 text-white p-4 transition-colors duration-500">
+      <div className="bg-green-600 dark:bg-green-600 text-white p-4 transition-colors duration-500">
         <div className="text-center">
             <h3 className="font-bold text-lg">Help is on the way!</h3>
-            <p className="text-sm text-green-100 dark:text-red-100">Emergency services have been informed.</p>
+            <p className="text-sm text-green-100 dark:text-green-100">Emergency services have been informed.</p>
         </div>
         <div className="mt-4">
             <h4 className="font-semibold text-sm mb-2 text-center">Notified Services:</h4>
             <div className="text-xs space-y-1 text-center">
                 {loading ? (
                     <div className="space-y-1">
-                        <div className="h-3 bg-red-400/50 rounded w-3/4 mx-auto"></div>
-                        <div className="h-3 bg-red-400/50 rounded w-1/2 mx-auto"></div>
-                        <div className="h-3 bg-red-400/50 rounded w-2/3 mx-auto"></div>
+                        <div className="h-3 bg-green-400/50 rounded w-3/4 mx-auto"></div>
+                        <div className="h-3 bg-green-400/50 rounded w-1/2 mx-auto"></div>
+                        <div className="h-3 bg-green-400/50 rounded w-2/3 mx-auto"></div>
                     </div>
                 ) : services.length > 0 ? (
                     services.map(service => (

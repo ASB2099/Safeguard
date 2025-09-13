@@ -30,8 +30,8 @@ const ServicesScreen: React.FC<ServicesScreenProps> = ({ navigateTo, viewService
   const renderContent = () => {
     if (loading || locationLoading) {
       return Array.from({ length: 4 }).map((_, index) => (
-        <div key={index} className="bg-white/60 dark:bg-black/60 border border-green-200/50 dark:border-red-900/50 p-4 rounded-xl shadow-colored-md flex items-center animate-pulse">
-            <div className="p-3 bg-green-100/30 dark:bg-red-900/30 rounded-full mr-4 text-green-500/50 dark:text-red-400/50 animate-pulse-slow">
+        <div key={index} className="bg-white/60 dark:bg-black/60 border border-green-200/50 dark:border-green-900/50 p-4 rounded-xl shadow-colored-md flex items-center animate-pulse">
+            <div className="p-3 bg-green-100/30 dark:bg-green-900/30 rounded-full mr-4 text-green-500/50 dark:text-green-400/50 animate-pulse-slow">
                 <ServicesIcon />
             </div>
             <div className='w-full space-y-2'>
@@ -43,18 +43,18 @@ const ServicesScreen: React.FC<ServicesScreenProps> = ({ navigateTo, viewService
     }
 
     if (error) {
-        return <div className="text-center p-4 text-red-500 dark:text-red-400">{error}</div>;
+        return <div className="text-center p-4 text-red-500 dark:text-green-400">{error}</div>;
     }
 
     return services.map((service, index) => (
       <button 
         key={service.id} 
         onClick={() => viewServiceOnMap(service)}
-        className="flippable-button group w-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 dark:border-red-500/30 p-4 rounded-xl shadow-colored-md flex items-center justify-between text-left transition-all duration-500 ease-in-out hover:bg-white/30 dark:hover:bg-red-500/20 hover:shadow-colored-lg active:scale-95 animate-fadeInUp"
+        className="flippable-button group w-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 dark:border-green-500/30 p-4 rounded-xl shadow-colored-md flex items-center justify-between text-left transition-all duration-500 ease-in-out hover:bg-white/30 dark:hover:bg-green-500/20 hover:shadow-colored-lg active:scale-95 animate-fadeInUp"
         style={{ animationDelay: `${index * 100}ms` }}
       >
         <div className="flex items-center">
-            <div className="p-3 bg-green-100/80 dark:bg-red-900/50 rounded-full mr-4 text-green-500 dark:text-red-400 transition-transform duration-300 group-hover:scale-110">
+            <div className="p-3 bg-green-100/80 dark:bg-green-900/50 rounded-full mr-4 text-green-500 dark:text-green-400 transition-transform duration-300 group-hover:scale-110">
                 {getIconForServiceType(service.type)}
             </div>
             <div>
@@ -62,7 +62,7 @@ const ServicesScreen: React.FC<ServicesScreenProps> = ({ navigateTo, viewService
                 <p className="text-sm text-black/70 dark:text-white/70">{service.type}</p>
             </div>
         </div>
-          <div className="text-green-400 dark:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></div>
+          <div className="text-green-400 dark:text-green-500"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg></div>
       </button>
     ));
   };

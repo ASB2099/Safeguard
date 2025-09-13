@@ -163,7 +163,7 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, the
         {disasterData.map((disaster, index) => (
           <div 
             key={disaster.id} 
-            className="group bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 dark:border-red-500/30 rounded-xl shadow-colored-md overflow-hidden animate-fadeInUp transition-all duration-500"
+            className="group bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 dark:border-green-500/30 rounded-xl shadow-colored-md overflow-hidden animate-fadeInUp transition-all duration-500"
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <button
@@ -173,7 +173,7 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, the
               aria-controls={`content-${disaster.id}`}
             >
               <div className="flex items-center">
-                <div className="mr-4 text-green-500 dark:text-red-500 transition-transform duration-300 group-hover:scale-110">{disaster.icon}</div>
+                <div className="mr-4 text-green-500 dark:text-green-500 transition-transform duration-300 group-hover:scale-110">{disaster.icon}</div>
                 <h3 className="font-bold text-lg text-black dark:text-white">{disaster.name}</h3>
               </div>
               <ChevronIcon isOpen={openId === disaster.id} />
@@ -183,14 +183,14 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, the
               className={`transition-all duration-500 ease-in-out overflow-hidden ${openId === disaster.id ? 'max-h-[500px]' : 'max-h-0'}`}
             >
               <div className="p-4 pt-0 text-black dark:text-white">
-                <div className="border-t border-green-200/50 dark:border-red-800/50 pt-4">
-                  <h4 className="font-semibold text-md text-green-800 dark:text-red-200 mb-2">What to do DURING:</h4>
+                <div className="border-t border-green-200/50 dark:border-green-800/50 pt-4">
+                  <h4 className="font-semibold text-md text-green-800 dark:text-green-200 mb-2">What to do DURING:</h4>
                   <ul className="list-disc list-inside space-y-1 text-sm text-black/80 dark:text-white/80">
                     {disaster.during.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>
                 </div>
                 <div className="mt-4">
-                  <h4 className="font-semibold text-md text-green-800 dark:text-red-200 mb-2">Precautions to take BEFORE:</h4>
+                  <h4 className="font-semibold text-md text-green-800 dark:text-green-200 mb-2">Precautions to take BEFORE:</h4>
                   <ul className="list-disc list-inside space-y-1 text-sm text-black/80 dark:text-white/80">
                     {disaster.precautions.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>

@@ -40,7 +40,7 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ navigateTo, the
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="John Doe"
-              className="mt-1 block w-full px-4 py-3 bg-white/50 dark:bg-black/50 backdrop-blur-sm border border-white/30 dark:border-red-500/30 rounded-lg shadow-colored-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-red-500 text-black dark:text-white hover:border-green-400/50 dark:hover:border-red-400/60 transition-all duration-500 placeholder:text-black/50 dark:placeholder:text-white/50"
+              className="mt-1 block w-full px-4 py-3 bg-white/50 dark:bg-black/50 backdrop-blur-sm border border-white/30 dark:border-green-500/30 rounded-lg shadow-colored-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-500 text-black dark:text-white hover:border-green-400/50 dark:hover:border-green-400/60 transition-all duration-500 placeholder:text-black/50 dark:placeholder:text-white/50"
               required
             />
           </div>
@@ -52,14 +52,14 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ navigateTo, the
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="mt-1 block w-full px-4 py-3 bg-white/50 dark:bg-black/50 backdrop-blur-sm border border-white/30 dark:border-red-500/30 rounded-lg shadow-colored-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-red-500 text-black dark:text-white hover:border-green-400/50 dark:hover:border-red-400/60 transition-all duration-500 placeholder:text-black/50 dark:placeholder:text-white/50"
+              className="mt-1 block w-full px-4 py-3 bg-white/50 dark:bg-black/50 backdrop-blur-sm border border-white/30 dark:border-green-500/30 rounded-lg shadow-colored-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-500 text-black dark:text-white hover:border-green-400/50 dark:hover:border-green-400/60 transition-all duration-500 placeholder:text-black/50 dark:placeholder:text-white/50"
               required
             />
           </div>
           <div className="animate-fadeInUp" style={{ animationDelay: '400ms' }}>
             <button
               type="submit"
-              className="flippable-button w-full flex justify-center py-3 px-4 border border-white/30 dark:border-red-500/30 rounded-lg shadow-colored-md text-sm font-medium text-black dark:text-white bg-white/20 dark:bg-black/20 backdrop-blur-md hover:bg-white/30 dark:hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-red-500 transition-colors duration-500"
+              className="flippable-button w-full flex justify-center py-3 px-4 border border-white/30 dark:border-green-500/30 rounded-lg shadow-colored-md text-sm font-medium text-black dark:text-white bg-white/20 dark:bg-black/20 backdrop-blur-md hover:bg-white/30 dark:hover:bg-green-500/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-green-500 transition-colors duration-500"
             >
               Register
             </button>

@@ -22,7 +22,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme 
   const sosFeature = { name: 'Emergency SOS', page: Page.SOS, icon: <SOSIcon /> };
   
   const iconColorClasses = () => {
-    return 'bg-green-100/80 text-green-600 dark:bg-red-900/50 dark:text-red-400';
+    return 'bg-green-100/80 text-green-600 dark:bg-green-900/50 dark:text-green-400';
   }
 
 
@@ -37,7 +37,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme 
               <button
                 key={feature.name}
                 onClick={() => navigateTo(feature.page)}
-                className={`h-full flex flex-col items-center justify-center flippable-button group p-4 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-2xl shadow-colored-md transition-all duration-500 ease-in-out hover:shadow-colored-lg active:scale-95 animate-fadeInUp border border-white/30 dark:border-red-500/30 hover:bg-white/30 dark:hover:bg-red-500/20`}
+                className={`h-full flex flex-col items-center justify-center flippable-button group p-4 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-2xl shadow-colored-md transition-all duration-500 ease-in-out hover:shadow-colored-lg active:scale-95 animate-fadeInUp border border-white/30 dark:border-green-500/30 hover:bg-white/30 dark:hover:bg-green-500/20`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className={`mx-auto mb-2 w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 ${iconColorClasses()}`}>
@@ -52,7 +52,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme 
         <div className="animate-fadeInUp" style={{ animationDelay: `${features.length * 100}ms` }}>
             <button 
                 onClick={() => navigateTo(sosFeature.page)}
-                className={`w-full p-6 bg-green-500 dark:bg-red-500 rounded-2xl shadow-colored-lg flex items-center justify-center text-white font-bold text-xl transition-transform active:scale-95 animate-pulse transition-colors duration-500`}
+                className={`w-full p-6 bg-green-500 dark:bg-green-600 rounded-2xl shadow-colored-lg flex items-center justify-center text-white font-bold text-xl transition-transform active:scale-95 animate-pulse transition-colors duration-500`}
             >
                 <div className="mr-3">{sosFeature.icon}</div>
                 {sosFeature.name}

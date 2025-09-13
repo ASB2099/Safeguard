@@ -85,8 +85,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
     <div className="flex flex-col h-full bg-transparent">
       <Header title="Customer Support" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} />
       
-      <div className="bg-green-50/60 dark:bg-red-900/10 backdrop-blur-sm text-center p-2 transition-colors duration-500">
-        <p className="text-xs text-green-800 dark:text-red-200/80">Email: support@safeguard.app | Phone: +1 (555) 123-4567</p>
+      <div className="bg-green-50/60 dark:bg-green-900/10 backdrop-blur-sm text-center p-2 transition-colors duration-500">
+        <p className="text-xs text-green-800 dark:text-green-200/80">Email: support@safeguard.app | Phone: +1 (555) 123-4567</p>
       </div>
 
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
@@ -94,11 +94,11 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
           <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fadeInUp`}>
             <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl transition-colors duration-500 ${
               msg.sender === 'user' 
-                ? 'bg-green-500 dark:bg-red-500 text-white rounded-br-none shadow-colored-md' 
+                ? 'bg-green-500 dark:bg-green-600 text-white rounded-br-none shadow-colored-md' 
                 : 'bg-white/70 dark:bg-black/30 backdrop-blur-md text-black dark:text-white rounded-bl-none shadow-colored-md'
             }`}>
               <p className="text-sm">{msg.text}</p>
-              <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-green-100 dark:text-red-100' : 'text-black/70 dark:text-red-200/70'} text-right`}>{msg.timestamp}</p>
+              <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-green-100 dark:text-green-100' : 'text-black/70 dark:text-green-200/70'} text-right`}>{msg.timestamp}</p>
             </div>
           </div>
         ))}
@@ -106,9 +106,9 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
             <div className="flex justify-start animate-fadeInUp">
                 <div className="bg-white/70 dark:bg-black/30 backdrop-blur-md rounded-2xl rounded-bl-none p-3 shadow-colored-md transition-colors duration-500">
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-400 dark:bg-red-400 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
-                        <div className="w-2 h-2 bg-green-400 dark:bg-red-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                        <div className="w-2 h-2 bg-green-400 dark:bg-red-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                        <div className="w-2 h-2 bg-green-400 dark:bg-green-400 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                        <div className="w-2 h-2 bg-green-400 dark:bg-green-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-2 h-2 bg-green-400 dark:bg-green-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
                     </div>
                 </div>
             </div>
@@ -116,9 +116,9 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 bg-white/60 dark:bg-black/60 backdrop-blur-md border-t border-green-200/50 dark:border-red-900/50 transition-colors duration-500">
-        <div className="flex items-center bg-white/50 dark:bg-black/20 rounded-full px-4 py-2 transition-colors duration-500 border border-white/30 dark:border-red-500/30">
-          <button onClick={startCamera} className="text-green-600 hover:text-green-700 dark:text-red-300 dark:hover:text-red-400">
+      <div className="p-4 bg-white/60 dark:bg-black/60 backdrop-blur-md border-t border-green-200/50 dark:border-green-900/50 transition-colors duration-500">
+        <div className="flex items-center bg-white/50 dark:bg-black/20 rounded-full px-4 py-2 transition-colors duration-500 border border-white/30 dark:border-green-500/30">
+          <button onClick={startCamera} className="text-green-600 hover:text-green-700 dark:text-green-300 dark:hover:text-green-400">
             <CameraIcon />
           </button>
           <input
@@ -130,7 +130,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
             className="flex-grow bg-transparent focus:outline-none mx-3 text-sm text-black dark:text-white placeholder-black/50 dark:placeholder-white/50"
             disabled={isLoading}
           />
-          <button onClick={handleSend} className="bg-green-500 dark:bg-red-500 text-white rounded-full p-2 hover:bg-green-600 dark:hover:bg-red-600 disabled:bg-green-200 dark:disabled:bg-red-800 transition-colors duration-500">
+          <button onClick={handleSend} className="bg-green-500 dark:bg-green-600 text-white rounded-full p-2 hover:bg-green-600 dark:hover:bg-green-700 disabled:bg-green-200 dark:disabled:bg-green-800 transition-colors duration-500">
             <SendIcon />
           </button>
         </div>

@@ -10,9 +10,8 @@ const CustomCursor: React.FC = () => {
       setPosition({ x: e.clientX, y: e.clientY });
       const target = e.target as HTMLElement;
       if (target) {
-        setIsPointer(
-          window.getComputedStyle(target).getPropertyValue('cursor') === 'pointer'
-        );
+        const isClickable = target.closest('button, a, input, select, textarea, [role="button"]');
+        setIsPointer(!!isClickable);
       }
     };
     
@@ -37,7 +36,7 @@ const CustomCursor: React.FC = () => {
       <div
         className={`fixed top-0 left-0 pointer-events-none z-[9999] rounded-full transition-all duration-300 ease-out ${
           isPointer ? 'scale-150 border-2' : 'scale-100 border'
-        } border-green-500 dark:border-red-500`}
+        } border-green-500 dark:border-green-500`}
         style={{
           transform: `translate(${position.x}px, ${position.y}px) translate(-50%, -50%)`,
           width: '40px',
@@ -45,7 +44,7 @@ const CustomCursor: React.FC = () => {
         }}
       />
       <div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] rounded-full bg-green-500 dark:bg-red-500 transition-all duration-100 ease-out"
+        className="fixed top-0 left-0 pointer-events-none z-[9999] rounded-full bg-green-500 dark:bg-green-500 transition-all duration-100 ease-out"
         style={{
           transform: `translate(${position.x}px, ${position.y}px) translate(-50%, -50%)`,
           width: '8px',
