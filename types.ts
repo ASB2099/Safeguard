@@ -1,5 +1,3 @@
-
-// FIX: Removed the self-import of `Page` which caused a conflict with the local enum declaration.
 export enum Page {
   Splash,
   Registration,

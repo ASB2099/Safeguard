@@ -43,6 +43,27 @@ const processError = (error: any): never => {
     throw new Error("Sorry, I'm having trouble connecting. Please try again later.");
 };
 
+const withRetry = async <T>(apiCall: () => Promise<T>, maxRetries = 3, initialDelay = 1000): Promise<T> => {
+  let attempt = 0;
+  while (true) {
+    try {
+      return await apiCall();
+    } catch (error: any) {
+      attempt++;
+      const errorString = String(error.message || error);
+      const isRateLimitError = errorString.includes('429') || errorString.toLowerCase().includes('quota');
+      
+      if (isRateLimitError && attempt < maxRetries) {
+        const delay = initialDelay * Math.pow(2, attempt - 1); // Exponential backoff
+        console.warn(`Rate limit exceeded. Retrying in ${delay}ms... (Attempt ${attempt}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        throw error; // Rethrow if not a rate limit error or if max retries reached
+      }
+    }
+  }
+};
+
 if (!process.env.API_KEY) {
   console.warn("API_KEY environment variable not set. Using a mock response.");
 }
@@ -75,13 +96,14 @@ export const getBotResponse = async (
   }
 
   try {
-    const response = await ai.models.generateContent({
+    const apiCall = () => ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
         config: {
             systemInstruction: isFirstMessage ? travelAssistantSystemInstruction : undefined,
         },
     });
+    const response = await withRetry(apiCall);
     return response.text;
   } catch (error) {
     processError(error);
@@ -107,7 +129,7 @@ export const getWeather = async (lat: number, lng: number) => {
   }
 
   try {
-    const response = await ai.models.generateContent({
+    const apiCall = () => ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: `Provide the current weather and a 5-item hourly forecast for latitude ${lat} and longitude ${lng}. Identify the city name as well.`,
       config: {
@@ -139,6 +161,7 @@ export const getWeather = async (lat: number, lng: number) => {
         },
       },
     });
+    const response = await withRetry(apiCall);
     const data = JSON.parse(response.text);
     setInCache(cacheKey, data);
     return data;
@@ -160,7 +183,7 @@ export const getNearbyServices = async (lat: number, lng: number): Promise<Servi
     }
     
     try {
-        const response = await ai.models.generateContent({
+        const apiCall = () => ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: `List up to 8 nearby essential services (like 'Hospital', 'Police', 'Pharmacy', 'ATM', 'Restaurant', 'Hotel') within a 20 kilometer radius of latitude ${lat}, longitude ${lng}. Ensure the 'type' field is one of the requested categories.`,
             config: {
@@ -190,6 +213,7 @@ export const getNearbyServices = async (lat: number, lng: number): Promise<Servi
                 }
             }
         });
+        const response = await withRetry(apiCall);
         const parsed = JSON.parse(response.text);
         setInCache(cacheKey, parsed.services);
         return parsed.services;
@@ -212,7 +236,7 @@ export const getTravelRoutes = async (lat: number, lng: number): Promise<TravelS
     }
 
     try {
-        const response = await ai.models.generateContent({
+        const apiCall = () => ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: `List 2 major travel hubs (one 'Train Station' and one 'Bus Station') near latitude ${lat}, longitude ${lng}. For each, provide a plausible travel path as an array of coordinates from the user's location.`,
             config: {
@@ -252,6 +276,7 @@ export const getTravelRoutes = async (lat: number, lng: number): Promise<TravelS
                 }
             }
         });
+        const response = await withRetry(apiCall);
         const parsed = JSON.parse(response.text);
         setInCache(cacheKey, parsed.routes);
         return parsed.routes;

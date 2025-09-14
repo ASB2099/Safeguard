@@ -10,15 +10,24 @@ interface Ripple {
 const RippleEffect: React.FC = () => {
   const [ripples, setRipples] = useState<Ripple[]>([]);
 
-  const addRipple = useCallback((e: MouseEvent) => {
-    // Only trigger for primary mouse button
-    if (e.button !== 0) return;
+  const addRipple = useCallback((e: MouseEvent | TouchEvent) => {
+    let clientX, clientY;
+
+    if ('touches' in e) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      // Only trigger for primary mouse button
+      if (e.button !== 0) return;
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
 
     const size = 100; // A bit bigger, but not too big
     const newRipple: Ripple = {
       id: Date.now(),
-      x: e.clientX,
-      y: e.clientY,
+      x: clientX,
+      y: clientY,
       size: size,
     };
 
@@ -26,9 +35,11 @@ const RippleEffect: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    window.addEventListener('mousedown', addRipple);
+    window.addEventListener('mousedown', addRipple as EventListener);
+    window.addEventListener('touchstart', addRipple as EventListener);
     return () => {
-      window.removeEventListener('mousedown', addRipple);
+      window.removeEventListener('mousedown', addRipple as EventListener);
+      window.removeEventListener('touchstart', addRipple as EventListener);
     };
   }, [addRipple]);
 

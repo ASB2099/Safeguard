@@ -132,10 +132,10 @@
       --cursor-y: 50vh;
     }
     * {
-      cursor: none;
+      cursor: none !important;
     }
-    a, button, input, select, textarea, [role="button"] {
-        cursor: none;
+    .map-container, .map-container * {
+      cursor: auto !important;
     }
     .dark {
       --shadow-color: rgba(34, 197, 94, 0.3);

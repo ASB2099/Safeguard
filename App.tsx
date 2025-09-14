@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Page, Service, TravelService } from './types';
 import SplashScreen from './screens/SplashScreen';
@@ -28,6 +27,11 @@ function App() {
   const [locationLoading, setLocationLoading] = useState(true);
 
   useEffect(() => {
+    // Only enable cursor following effect on devices with a fine pointer (mouse/trackpad)
+    if (!window.matchMedia('(pointer: fine)').matches) {
+      return;
+    }
+
     const handleMouseMove = (event: MouseEvent) => {
       document.documentElement.style.setProperty('--cursor-x', `${event.clientX}px`);
       document.documentElement.style.setProperty('--cursor-y', `${event.clientY}px`);
@@ -56,7 +60,12 @@ function App() {
           setLocationLoading(false);
         },
         () => {
-          setLocationError("Unable to retrieve your location. Please enable location services. Showing default location.");
+          let errorMessage = "Unable to retrieve your location. Please enable location services in your browser settings.";
+          const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          if (isLocalhost) {
+              errorMessage = "To see your real location, you must grant location permissions to your browser for this site.";
+          }
+          setLocationError(errorMessage + " Displaying default location for demonstration.");
           setLocation(USER_LOCATION); // Fallback to default
           setLocationLoading(false);
         },
