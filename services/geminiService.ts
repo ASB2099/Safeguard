@@ -102,9 +102,11 @@ let ai: GoogleGenAI | null = null;
  */
 const getAi = () => {
   if (!ai) {
-    // Per security best practices, the API key is not hardcoded.
-    // It is securely accessed from the pre-configured environment variable process.env.API_KEY.
-    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // The API key is provided here for demonstration purposes.
+    // In a production environment, it is strongly recommended to use a secure method 
+    // for managing API keys, such as environment variables.
+    const apiKey = "AIzaSyC5k7MSYfjKfvQBBq69d7SzBBb-51t5cWI";
+    ai = new GoogleGenAI({ apiKey: apiKey });
   }
   return ai;
 };
