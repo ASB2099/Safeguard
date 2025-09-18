@@ -33,15 +33,44 @@ const setInCache = (key: string, data: any) => {
   }
 };
 
-// --- Error Handling ---
+// --- Robust JSON Parsing ---
+const parseJsonResponse = (responseText: string) => {
+    try {
+        const trimmedText = responseText.trim();
+        // Handle markdown code blocks for JSON, which the model might add
+        if (trimmedText.startsWith('```json') && trimmedText.endsWith('```')) {
+            const jsonString = trimmedText.substring(7, trimmedText.length - 3);
+            return JSON.parse(jsonString);
+        }
+        return JSON.parse(trimmedText);
+    } catch (e) {
+        console.error("Failed to parse JSON response:", responseText);
+        // Throw a specific error that can be handled by processError
+        throw new Error("Received an invalid format from the AI service.");
+    }
+}
+
+
+// --- Improved Error Handling ---
 const processError = (error: any): never => {
-    console.error("Error fetching from Gemini API:", error);
+    console.error("Error from Gemini API or processing:", error);
     const errorString = String(error.message || error);
+    
     if (errorString.includes('429') || errorString.toLowerCase().includes('quota')) {
         throw new Error("You've made too many requests. Please wait a few moments and try again.");
     }
-    throw new Error("Sorry, I'm having trouble connecting. Please try again later.");
+    
+    if (errorString.toLowerCase().includes('api key')) {
+        throw new Error("The application is not configured correctly. An API key is required or invalid.");
+    }
+    
+    if (errorString.includes("invalid format from the AI service")) {
+        throw new Error("The AI returned a response in an unexpected format. Please try again.");
+    }
+    
+    throw new Error("Sorry, I'm having trouble connecting to the AI service. Please check your internet connection and try again later.");
 };
+
 
 const withRetry = async <T>(apiCall: () => Promise<T>, maxRetries = 3, initialDelay = 1000): Promise<T> => {
   let attempt = 0;
@@ -101,7 +130,6 @@ export const getBotResponse = async (
             systemInstruction: isFirstMessage ? travelAssistantSystemInstruction : undefined,
         },
     });
-    // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
     const response: GenerateContentResponse = await withRetry(apiCall);
     return response.text;
   } catch (error) {
@@ -150,9 +178,8 @@ export const getWeather = async (lat: number, lng: number) => {
         },
       },
     });
-    // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
     const response: GenerateContentResponse = await withRetry(apiCall);
-    const data = JSON.parse(response.text);
+    const data = parseJsonResponse(response.text);
     setInCache(cacheKey, data);
     return data;
   } catch (error) {
@@ -196,9 +223,8 @@ export const getNearbyServices = async (lat: number, lng: number): Promise<Servi
                 }
             }
         });
-        // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
         const response: GenerateContentResponse = await withRetry(apiCall);
-        const parsed = JSON.parse(response.text);
+        const parsed = parseJsonResponse(response.text);
         setInCache(cacheKey, parsed.services);
         return parsed.services;
     } catch(error) {
@@ -253,9 +279,8 @@ export const getTravelRoutes = async (lat: number, lng: number): Promise<TravelS
                 }
             }
         });
-        // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
         const response: GenerateContentResponse = await withRetry(apiCall);
-        const parsed = JSON.parse(response.text);
+        const parsed = parseJsonResponse(response.text);
         setInCache(cacheKey, parsed.routes);
         return parsed.routes;
     } catch(error) {
@@ -300,9 +325,8 @@ export const getSecureZones = async (lat: number, lng: number): Promise<SecureZo
                 }
             }
         });
-        // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
         const response: GenerateContentResponse = await withRetry(apiCall);
-        const parsed = JSON.parse(response.text);
+        const parsed = parseJsonResponse(response.text);
         setInCache(cacheKey, parsed.zones);
         return parsed.zones;
     } catch(error) {
@@ -348,9 +372,8 @@ export const getLocalGuides = async (lat: number, lng: number): Promise<LocalGui
                 }
             }
         });
-        // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
         const response: GenerateContentResponse = await withRetry(apiCall);
-        const parsed = JSON.parse(response.text);
+        const parsed = parseJsonResponse(response.text);
         setInCache(cacheKey, parsed.guides);
         return parsed.guides;
     } catch(error) {
