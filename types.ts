@@ -11,6 +11,10 @@ export enum Page {
   TravelMap,
   SOS,
   Preparedness,
+  SecureZones,
+  SecureZoneMap,
+  EmergencyContacts,
+  LocalGuides,
 }
 
 export interface Message {
@@ -29,4 +33,20 @@ export interface Service {
 
 export interface TravelService extends Service {
     path: { lat: number; lng: number }[];
+}
+
+export interface SecureZone {
+    id: string;
+    name: string;
+    type: string;
+    description: string;
+    location: { lat: number; lng: number };
+}
+
+export interface LocalGuide {
+    id: string;
+    name: string;
+    specialty: string;
+    contact: string;
+    location: { lat: number; lng: number };
 }

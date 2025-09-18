@@ -27,7 +27,7 @@ const DateTimeDisplay: React.FC = () => {
   };
 
   return (
-    <div className="text-xs text-right text-green-800 dark:text-green-200/90 mr-2 transition-colors duration-500">
+    <div className="text-xs text-right text-light-text-secondary dark:text-dark-text-secondary mr-2 transition-colors duration-500">
       <p className="font-semibold">{formatTime(currentDateTime)}</p>
       <p>{formatDate(currentDateTime)}</p>
     </div>

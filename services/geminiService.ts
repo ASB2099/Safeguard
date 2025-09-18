@@ -1,5 +1,5 @@
-import { GoogleGenAI, Type } from "@google/genai";
-import { Service, TravelService } from "../types";
+import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
+import { Service, TravelService, SecureZone, LocalGuide } from "../types";
 
 // --- Caching Implementation ---
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -103,7 +103,8 @@ export const getBotResponse = async (
             systemInstruction: isFirstMessage ? travelAssistantSystemInstruction : undefined,
         },
     });
-    const response = await withRetry(apiCall);
+    // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
+    const response: GenerateContentResponse = await withRetry(apiCall);
     return response.text;
   } catch (error) {
     processError(error);
@@ -125,13 +126,15 @@ export const getWeather = async (lat: number, lng: number) => {
         { time: '2 PM', temp: 30, description: 'Sunny' },
         { time: '4 PM', temp: 29, description: 'Cloudy' },
       ],
+      hasAlert: true,
+      alertDescription: "Heavy monsoon rains expected. Avoid travel near rivers.",
     };
   }
 
   try {
     const apiCall = () => ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Provide the current weather and a 5-item hourly forecast for latitude ${lat} and longitude ${lng}. Identify the city name as well.`,
+      contents: `Provide the current weather and a 5-item hourly forecast for latitude ${lat} and longitude ${lng}. Identify the city name. Also, provide a brief 'alertDescription' (max 15 words) and a boolean 'hasAlert' if there are any severe weather warnings like heavy rain, storms, or floods. If not, make 'alertDescription' an empty string and 'hasAlert' false.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -157,11 +160,14 @@ export const getWeather = async (lat: number, lng: number) => {
                 },
               },
             },
+            hasAlert: { type: Type.BOOLEAN },
+            alertDescription: { type: Type.STRING },
           },
         },
       },
     });
-    const response = await withRetry(apiCall);
+    // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
+    const response: GenerateContentResponse = await withRetry(apiCall);
     const data = JSON.parse(response.text);
     setInCache(cacheKey, data);
     return data;
@@ -213,7 +219,8 @@ export const getNearbyServices = async (lat: number, lng: number): Promise<Servi
                 }
             }
         });
-        const response = await withRetry(apiCall);
+        // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
+        const response: GenerateContentResponse = await withRetry(apiCall);
         const parsed = JSON.parse(response.text);
         setInCache(cacheKey, parsed.services);
         return parsed.services;
@@ -276,10 +283,120 @@ export const getTravelRoutes = async (lat: number, lng: number): Promise<TravelS
                 }
             }
         });
-        const response = await withRetry(apiCall);
+        // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
+        const response: GenerateContentResponse = await withRetry(apiCall);
         const parsed = JSON.parse(response.text);
         setInCache(cacheKey, parsed.routes);
         return parsed.routes;
+    } catch(error) {
+        processError(error);
+    }
+};
+
+export const getSecureZones = async (lat: number, lng: number): Promise<SecureZone[]> => {
+    const cacheKey = `secure-zones-${lat.toFixed(4)}-${lng.toFixed(4)}`;
+    const cachedData = getFromCache(cacheKey);
+    if (cachedData) return cachedData;
+
+    if (!process.env.API_KEY) {
+        return [
+          { id: 'sz1', name: 'Mock Community Hall', type: 'Community Shelter', description: 'Designated as a primary evacuation point during floods.', location: { lat: lat + 0.005, lng: lng - 0.005 } },
+          { id: 'sz2', name: 'Mock Underground Metro Station', type: 'Reinforced Building', description: 'Offers protection from severe storms and earthquakes.', location: { lat: lat - 0.003, lng: lng + 0.004 } },
+        ];
+    }
+    
+    try {
+        const apiCall = () => ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: `List up to 5 nearby secure zones within a 20km radius of latitude ${lat}, longitude ${lng}. These should be locations protected from natural disasters, like 'Community Shelter', 'Reinforced Building', or 'Emergency Bunker'. Provide a brief 'description' for each.`,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        zones: {
+                            type: Type.ARRAY,
+                            items: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    id: { type: Type.STRING },
+                                    name: { type: Type.STRING },
+                                    type: { type: Type.STRING },
+                                    description: { type: Type.STRING },
+                                    location: {
+                                        type: Type.OBJECT,
+                                        properties: {
+                                            lat: { type: Type.NUMBER },
+                                            lng: { type: Type.NUMBER },
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
+        const response: GenerateContentResponse = await withRetry(apiCall);
+        const parsed = JSON.parse(response.text);
+        setInCache(cacheKey, parsed.zones);
+        return parsed.zones;
+    } catch(error) {
+        processError(error);
+    }
+};
+
+
+export const getLocalGuides = async (lat: number, lng: number): Promise<LocalGuide[]> => {
+    const cacheKey = `local-guides-${lat.toFixed(4)}-${lng.toFixed(4)}`;
+    const cachedData = getFromCache(cacheKey);
+    if (cachedData) return cachedData;
+
+    if (!process.env.API_KEY) {
+        return [
+          { id: 'lg1', name: 'Rohan Sharma', specialty: 'Historical Fort Tours', contact: '+919876543210', location: { lat: lat + 0.002, lng: lng - 0.002 } },
+          { id: 'lg2', name: 'Priya Patel', specialty: 'Trekking & Nature Walks', contact: '+919123456789', location: { lat: lat - 0.001, lng: lng + 0.003 } },
+        ];
+    }
+    
+    try {
+        const apiCall = () => ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: `List up to 5 local guides near latitude ${lat}, longitude ${lng}. Include their name, a brief specialty (e.g., 'Trekking', 'Historical Tours'), a valid Indian contact number, and their approximate location.`,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        guides: {
+                            type: Type.ARRAY,
+                            items: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    id: { type: Type.STRING },
+                                    name: { type: Type.STRING },
+                                    specialty: { type: Type.STRING },
+                                    contact: { type: Type.STRING },
+                                    location: {
+                                        type: Type.OBJECT,
+                                        properties: {
+                                            lat: { type: Type.NUMBER },
+                                            lng: { type: Type.NUMBER },
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        // FIX: Explicitly type the response from the Gemini API call to resolve property 'text' not existing on 'unknown'.
+        const response: GenerateContentResponse = await withRetry(apiCall);
+        const parsed = JSON.parse(response.text);
+        setInCache(cacheKey, parsed.guides);
+        return parsed.guides;
     } catch(error) {
         processError(error);
     }

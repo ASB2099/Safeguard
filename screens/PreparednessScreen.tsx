@@ -152,18 +152,18 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, the
   };
 
   return (
-    <div className="flex flex-col h-full bg-transparent">
-      <Header title="Disaster Preparedness" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} />
+    <div className="flex flex-col h-full bg-gradient-page">
+      <Header title="Disaster Preparedness" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.Preparedness} />
       
       <div className="flex-grow overflow-y-auto p-4 space-y-3">
-        <p className="text-sm text-black/70 dark:text-white/70 px-2 pb-2 animate-fadeIn">
+        <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary px-2 pb-2 animate-fadeIn">
             Stay safe by learning what to do before and during common natural disasters.
         </p>
         
         {disasterData.map((disaster, index) => (
           <div 
             key={disaster.id} 
-            className="group bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 dark:border-green-500/30 rounded-xl shadow-colored-md overflow-hidden animate-fadeInUp transition-all duration-500"
+            className="group bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl shadow-md overflow-hidden animate-fadeInUp transition-all duration-500"
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <button
@@ -173,8 +173,8 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, the
               aria-controls={`content-${disaster.id}`}
             >
               <div className="flex items-center">
-                <div className="mr-4 text-green-500 dark:text-green-500 transition-transform duration-300 group-hover:scale-110">{disaster.icon}</div>
-                <h3 className="font-bold text-lg text-black dark:text-white">{disaster.name}</h3>
+                <div className="mr-4 text-prep-primary dark:text-prep-primary-dark transition-transform duration-300 group-hover:scale-110">{disaster.icon}</div>
+                <h3 className="font-bold text-lg text-light-text dark:text-dark-text">{disaster.name}</h3>
               </div>
               <ChevronIcon isOpen={openId === disaster.id} />
             </button>
@@ -182,16 +182,16 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, the
               id={`content-${disaster.id}`}
               className={`transition-all duration-500 ease-in-out overflow-hidden ${openId === disaster.id ? 'max-h-[500px]' : 'max-h-0'}`}
             >
-              <div className="p-4 pt-0 text-black dark:text-white">
-                <div className="border-t border-green-200/50 dark:border-green-800/50 pt-4">
-                  <h4 className="font-semibold text-md text-green-800 dark:text-green-200 mb-2">What to do DURING:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-black/80 dark:text-white/80">
+              <div className="p-4 pt-0 text-light-text dark:text-dark-text">
+                <div className="border-t border-light-border dark:border-dark-border pt-4">
+                  <h4 className="font-semibold text-md text-prep-primary dark:text-prep-primary-dark mb-2">What to do DURING:</h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-light-text-secondary dark:text-dark-text-secondary">
                     {disaster.during.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>
                 </div>
                 <div className="mt-4">
-                  <h4 className="font-semibold text-md text-green-800 dark:text-green-200 mb-2">Precautions to take BEFORE:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-black/80 dark:text-white/80">
+                  <h4 className="font-semibold text-md text-prep-primary dark:text-prep-primary-dark mb-2">Precautions to take BEFORE:</h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-light-text-secondary dark:text-dark-text-secondary">
                     {disaster.precautions.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>
                 </div>

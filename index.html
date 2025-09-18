@@ -14,15 +14,54 @@
     }
   }
   </script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
+          colors: {
+            // Base Palette (More Saturated & Poppy)
+            'primary': '#3B82F6', // Brighter Blue (blue-500)
+            'primary-dark': '#60A5FA', // (blue-400)
+            'accent': '#FACC15', // Vibrant Yellow (yellow-400)
+            'accent-dark': '#FDE047', // (yellow-300)
+            'danger': '#EF4444', // Bright Red (red-500)
+            'danger-dark': '#F87171', // (red-400)
+
+            // Feature Palettes (More Saturated & Poppy)
+            'chat-primary': '#A855F7', // Vivid Purple (purple-500)
+            'chat-primary-dark': '#C084FC', // (purple-400)
+            'location-primary': '#14B8A6', // Bright Teal (teal-500)
+            'location-primary-dark': '#2DD4BF', // (teal-400)
+            'weather-primary': '#F97316', // Rich Orange (orange-500)
+            'weather-primary-dark': '#FB923C', // (orange-400)
+            'travel-primary': '#4F46E5', // Deep Indigo (indigo-600)
+            'travel-primary-dark': '#818CF8', // (indigo-400)
+            'prep-primary': '#22C55E', // Vibrant Green (green-500)
+            'prep-primary-dark': '#4ADE80', // (green-400)
+            'secure-primary': '#06B6D4', // Bright Cyan (cyan-500)
+            'secure-primary-dark': '#22D3EE', // (cyan-400)
+            'contacts-primary': '#64748B', // Slate (slate-500)
+            'contacts-primary-dark': '#94A3B8', // (slate-400)
+            'guide-primary': '#D97706', // Amber (amber-600)
+            'guide-primary-dark': '#F59E0B', // (amber-500)
+
+            // UI Colors
+            'light-bg': '#F8F9FA',
+            'dark-bg': '#18181b', // Slightly darker bg
+            'light-surface': '#FFFFFF',
+            'dark-surface': '#27272a', // Slightly lighter surface
+            'light-text': '#18181b', // Darker text for contrast
+            'dark-text': '#f4f4f5',
+            'light-text-secondary': '#52525b',
+            'dark-text-secondary': '#a1a1aa',
+            'light-border': '#e4e4e7',
+            'dark-border': '#52525b',
+          },
           fontFamily: {
-            sans: ['Poppins', 'sans-serif'],
+            sans: ['Roboto', 'sans-serif'],
           },
           boxShadow: {
             'colored-md': '0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color)',
@@ -33,7 +72,7 @@
             fadeInUp: 'fadeInUp 0.5s ease-in-out forwards',
             pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'pulse-bg': 'pulse-bg 2s infinite',
+            'pulse-bg-accent': 'pulse-bg-accent 2s infinite',
             scaleIn: 'scaleIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
             popIn: 'popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards',
             glow: 'glow 2s ease-in-out infinite alternate',
@@ -46,6 +85,7 @@
             'card-flip': 'card-flip 0.7s cubic-bezier(0.455, 0.03, 0.515, 0.955)',
             'radar-scan': 'radar-scan 1.5s infinite cubic-bezier(0.215, 0.610, 0.355, 1)',
             'sos-pulse': 'sos-pulse 2s infinite',
+            'sos-bg-pulse': 'sos-bg-pulse 1.5s infinite ease-in-out',
           },
           keyframes: {
             fadeIn: {
@@ -56,9 +96,13 @@
               '0%': { opacity: 0, transform: 'translateY(20px)' },
               '100%': { opacity: 1, transform: 'translateY(0)' },
             },
-            'pulse-bg': {
-              '0%, 100%': { backgroundColor: 'rgba(34, 197, 94, 0.1)' },
-              '50%': { backgroundColor: 'rgba(34, 197, 94, 0.2)' },
+            'sos-bg-pulse': { // For SOS Screen (Red)
+              '0%, 100%': { backgroundColor: 'rgba(239, 68, 68, 0.8)' },
+              '50%': { backgroundColor: 'rgba(239, 68, 68, 1)' },
+            },
+            'pulse-bg-accent': { // For Weather Alert (Yellow)
+              '0%, 100%': { backgroundColor: 'rgba(250, 204, 21, 0.1)' },
+              '50%': { backgroundColor: 'rgba(250, 204, 21, 0.2)' },
             },
             scaleIn: {
               '0%': { transform: 'scale(0.8)', opacity: 0 },
@@ -112,8 +156,8 @@
                 'to': { transform: 'perspective(1000px) rotateY(360deg)' },
             },
             'radar-scan': {
-                '0%': { boxShadow: '0 0 0 0px rgba(34, 197, 94, 0.4)', opacity: 1 },
-                '100%': { boxShadow: '0 0 0 40px rgba(34, 197, 94, 0)', opacity: 0 },
+                '0%': { boxShadow: '0 0 0 0px var(--scan-color, rgba(59, 130, 246, 0.4))', opacity: 1 },
+                '100%': { boxShadow: '0 0 0 40px var(--scan-color, rgba(59, 130, 246, 0))', opacity: 0 },
             },
             'sos-pulse': {
                 '0%': { transform: 'scale(0.95)', boxShadow: '0 0 0 0 rgba(239, 68, 68, 0.7)' },
@@ -127,7 +171,7 @@
   </script>
   <style>
     :root {
-      --shadow-color: rgba(34, 197, 94, 0.2);
+      --shadow-color: rgba(59, 130, 246, 0.2);
       --cursor-x: 50vw;
       --cursor-y: 50vh;
     }
@@ -138,22 +182,22 @@
       cursor: auto !important;
     }
     .dark {
-      --shadow-color: rgba(34, 197, 94, 0.3);
+      --shadow-color: rgba(96, 165, 250, 0.3);
     }
     body {
-        background-color: #ffffff;
+        background-color: #F8F9FA;
         background-image: radial-gradient(
             circle 60vmin at var(--cursor-x) var(--cursor-y),
-            rgba(52, 211, 153, 0.4),
+            rgba(59, 130, 246, 0.2),
             transparent 50%
         );
         transition: background-color 0.5s ease;
     }
     .dark body {
-        background-color: #000000;
+        background-color: #18181b;
         background-image: radial-gradient(
             circle 60vmin at var(--cursor-x) var(--cursor-y),
-            rgba(52, 211, 153, 0.4),
+            rgba(96, 165, 250, 0.2),
             transparent 50%
         );
     }
@@ -172,12 +216,12 @@
         position: absolute;
         border-radius: 50%;
         transform: translate(-50%, -50%) scale(0);
-        background-color: rgba(52, 211, 153, 0.4); /* Light theme color */
+        background-color: var(--ripple-color, rgba(59, 130, 246, 0.4));
         animation: ripple-animation 0.7s ease-out;
     }
 
     .dark .ripple-effect {
-        background-color: rgba(52, 211, 153, 0.4); /* Dark theme color */
+        background-color: var(--ripple-color-dark, rgba(96, 165, 250, 0.4));
     }
 
     @keyframes ripple-animation {
@@ -186,18 +230,29 @@
             opacity: 0;
         }
     }
+    
+    .bg-gradient-page {
+        background-image: linear-gradient(to top left, var(--page-gradient-from, #F8F9FA), var(--page-gradient-to, #FFFFFF));
+    }
+    .dark .bg-gradient-page {
+        background-image: linear-gradient(to top left, var(--page-gradient-from-dark, #202124), var(--page-gradient-to-dark, #18181b));
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
 
     .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
     .animate-fadeInUp { animation: fadeInUp 0.5s ease-in-out forwards; }
     .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    .animate-pulse-bg { animation: pulse-bg 2s infinite; }
-    .dark .animate-pulse-bg {
-        animation-name: pulse-bg-dark;
-    }
-    @keyframes pulse-bg-dark {
-        '0%, 100%': { backgroundColor: 'rgba(34, 197, 94, 0.2)' };
-        '50%': { backgroundColor: 'rgba(34, 197, 94, 0.4)' };
-    }
+    .animate-pulse-bg-accent { animation: pulse-bg-accent 2s infinite; }
+    .animate-sos-bg-pulse { animation: sos-bg-pulse 1.5s infinite ease-in-out; }
     .animate-scaleIn { animation: scaleIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
     .animate-popIn { animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; }
     .animate-glow { animation: glow 2s ease-in-out infinite alternate; }
@@ -227,7 +282,7 @@
     }
   </style>
 </head>
-<body class="transition-colors duration-500">
+<body class="transition-colors duration-500 bg-light-bg dark:bg-dark-bg">
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

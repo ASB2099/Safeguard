@@ -54,24 +54,24 @@ const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigateTo, theme, toggle
   const renderLoadingState = () => (
     <div className="w-full h-full flex flex-col items-center justify-center bg-transparent py-10 opacity-70">
       <div className="relative w-40 h-40">
-        <div className="absolute top-0 left-0 text-green-500 dark:text-green-500">
+        <div className="absolute top-0 left-0 text-weather-primary dark:text-weather-primary-dark">
           <SunIcon large />
         </div>
-        <div className="absolute top-8 left-4 text-green-400 dark:text-green-400">
+        <div className="absolute top-8 left-4 text-weather-primary/70 dark:text-weather-primary-dark/70">
            <CloudIcon large />
         </div>
       </div>
-      <p className="mt-4 text-lg text-black dark:text-white animate-pulse">Forecasting the skies...</p>
+      <p className="mt-4 text-lg text-light-text dark:text-dark-text animate-pulse">Forecasting the skies...</p>
     </div>
   );
 
   return (
-    <div className="flex flex-col h-full bg-transparent">
-      <Header title="Weather" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} />
+    <div className="flex flex-col h-full bg-gradient-page">
+      <Header title="Weather" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.Weather} />
       
       <div className="flex-grow rounded-t-[40px] p-6 overflow-y-auto transition-colors duration-500">
         {disasterAlert && (
-          <div className="bg-green-500/80 dark:bg-green-500/80 backdrop-blur-md border-l-4 border-green-700 dark:border-green-700 text-white p-4 rounded-lg mb-6 shadow-colored-lg animate-pulse-bg animate-fadeIn">
+          <div className="bg-accent/80 dark:bg-accent-dark/80 backdrop-blur-md border-l-4 border-yellow-600 dark:border-yellow-400 text-light-text dark:text-dark-text p-4 rounded-lg mb-6 shadow-colored-lg animate-pulse-bg-accent animate-fadeIn" style={{ '--shadow-color': theme === 'light' ? 'rgba(250, 204, 21, 0.3)' : 'rgba(253, 224, 71, 0.4)' } as React.CSSProperties}>
             <div className="flex">
               <div className="py-1"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg></div>
               <div>
@@ -82,27 +82,27 @@ const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigateTo, theme, toggle
           </div>
         )}
 
-        {loading || locationLoading ? renderLoadingState() : error ? <div className="text-center p-4 text-red-500 dark:text-green-400">{error}</div> : weatherData && (
+        {loading || locationLoading ? renderLoadingState() : error ? <div className="text-center p-4 text-red-500 dark:text-red-400">{error}</div> : weatherData && (
             <>
-                <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-white/30 dark:border-green-500/30 rounded-2xl p-6 text-center shadow-colored-md mb-6 animate-fadeInUp transition-colors duration-500" style={{animationDelay: '100ms'}}>
-                    <p className="text-black/70 dark:text-white/70">{weatherData.cityName}</p>
-                    <p className="text-sm text-black/70 dark:text-white/70 mt-1">{currentDate}</p>
+                <div className="bg-light-surface dark:bg-dark-surface backdrop-blur-md border border-light-border dark:border-dark-border rounded-2xl p-6 text-center shadow-md mb-6 animate-fadeInUp transition-colors duration-500" style={{animationDelay: '100ms'}}>
+                    <p className="text-light-text-secondary dark:text-dark-text-secondary">{weatherData.cityName}</p>
+                    <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mt-1">{currentDate}</p>
                     <div className="flex items-center justify-center my-4">
-                        <div className="text-green-500 dark:text-green-500 mr-4 transition-colors duration-500">{getWeatherIcon(weatherData.current.description, true)}</div>
-                        <h1 className="text-6xl font-bold text-black dark:text-white">{Math.round(weatherData.current.temp)}°C</h1>
+                        <div className="text-weather-primary dark:text-weather-primary-dark mr-4 transition-colors duration-500">{getWeatherIcon(weatherData.current.description, true)}</div>
+                        <h1 className="text-6xl font-bold text-light-text dark:text-dark-text">{Math.round(weatherData.current.temp)}°C</h1>
                     </div>
-                    <p className="font-semibold text-black dark:text-white">{weatherData.current.description}</p>
-                    <p className="text-sm text-black/70 dark:text-white/70">Feels like {Math.round(weatherData.current.feelsLike)}°C</p>
+                    <p className="font-semibold text-light-text dark:text-dark-text">{weatherData.current.description}</p>
+                    <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">Feels like {Math.round(weatherData.current.feelsLike)}°C</p>
                 </div>
 
-                <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-white/30 dark:border-green-500/30 rounded-2xl p-6 shadow-colored-md animate-fadeInUp transition-colors duration-500" style={{animationDelay: '200ms'}}>
-                    <h3 className="font-bold text-black dark:text-white mb-4">Upcoming Forecast</h3>
+                <div className="bg-light-surface dark:bg-dark-surface backdrop-blur-md border border-light-border dark:border-dark-border rounded-2xl p-6 shadow-md animate-fadeInUp transition-colors duration-500" style={{animationDelay: '200ms'}}>
+                    <h3 className="font-bold text-light-text dark:text-dark-text mb-4">Upcoming Forecast</h3>
                     <div className="flex justify-between overflow-x-auto -mx-6 px-6">
                         {weatherData.forecast.map((item, index) => (
                             <div key={index} className="flex flex-col items-center space-y-2 flex-shrink-0 px-2">
-                                <p className="text-sm font-semibold text-black/70 dark:text-white/70">{item.time}</p>
-                                <div className={`text-2xl transition-colors duration-500 text-green-500 dark:text-green-400`}>{getWeatherIcon(item.description)}</div>
-                                <p className="font-bold text-black dark:text-white">{Math.round(item.temp)}°</p>
+                                <p className="text-sm font-semibold text-light-text-secondary dark:text-dark-text-secondary">{item.time}</p>
+                                <div className={`text-2xl transition-colors duration-500 text-weather-primary dark:text-weather-primary-dark`}>{getWeatherIcon(item.description)}</div>
+                                <p className="font-bold text-light-text dark:text-dark-text">{Math.round(item.temp)}°</p>
                             </div>
                         ))}
                     </div>
