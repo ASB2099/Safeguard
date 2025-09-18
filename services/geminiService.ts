@@ -64,7 +64,21 @@ const withRetry = async <T>(apiCall: () => Promise<T>, maxRetries = 3, initialDe
   }
 };
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let ai: GoogleGenAI | null = null;
+
+/**
+ * Lazily initializes and returns the GoogleGenAI instance.
+ * This prevents the app from crashing on startup if the API key
+ * isn't immediately available.
+ */
+const getAi = () => {
+  if (!ai) {
+    // This will throw an error if process.env.API_KEY is not available,
+    // but it will happen during an API call, not on app load.
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  }
+  return ai;
+};
 
 const travelAssistantSystemInstruction = `You are 'Surakshify', a friendly and helpful AI assistant for travelers. 
 Your goal is to provide concise, useful, and safe information. 
@@ -80,7 +94,7 @@ export const getBotResponse = async (
   isFirstMessage: boolean
 ): Promise<string> => {
   try {
-    const apiCall = () => ai.models.generateContent({
+    const apiCall = () => getAi().models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
         config: {
@@ -102,7 +116,7 @@ export const getWeather = async (lat: number, lng: number) => {
   if (cachedData) return cachedData;
   
   try {
-    const apiCall = () => ai.models.generateContent({
+    const apiCall = () => getAi().models.generateContent({
       model: "gemini-2.5-flash",
       contents: `Provide the current weather and a 5-item hourly forecast for latitude ${lat} and longitude ${lng}. Identify the city name. Also, provide a brief 'alertDescription' (max 15 words) and a boolean 'hasAlert' if there are any severe weather warnings like heavy rain, storms, or floods. If not, make 'alertDescription' an empty string and 'hasAlert' false.`,
       config: {
@@ -152,7 +166,7 @@ export const getNearbyServices = async (lat: number, lng: number): Promise<Servi
     if (cachedData) return cachedData;
     
     try {
-        const apiCall = () => ai.models.generateContent({
+        const apiCall = () => getAi().models.generateContent({
             model: "gemini-2.5-flash",
             contents: `List up to 8 nearby essential services (like 'Hospital', 'Police', 'Pharmacy', 'ATM', 'Restaurant', 'Hotel') within a 20 kilometer radius of latitude ${lat}, longitude ${lng}. Ensure the 'type' field is one of the requested categories.`,
             config: {
@@ -199,7 +213,7 @@ export const getTravelRoutes = async (lat: number, lng: number): Promise<TravelS
     if (cachedData) return cachedData;
     
     try {
-        const apiCall = () => ai.models.generateContent({
+        const apiCall = () => getAi().models.generateContent({
             model: "gemini-2.5-flash",
             contents: `List 2 major travel hubs (one 'Train Station' and one 'Bus Station') near latitude ${lat}, longitude ${lng}. For each, provide a plausible travel path as an array of coordinates from the user's location.`,
             config: {
@@ -255,7 +269,7 @@ export const getSecureZones = async (lat: number, lng: number): Promise<SecureZo
     if (cachedData) return cachedData;
     
     try {
-        const apiCall = () => ai.models.generateContent({
+        const apiCall = () => getAi().models.generateContent({
             model: "gemini-2.5-flash",
             contents: `List up to 5 nearby secure zones within a 20km radius of latitude ${lat}, longitude ${lng}. These should be locations protected from natural disasters, like 'Community Shelter', 'Reinforced Building', or 'Emergency Bunker'. Provide a brief 'description' for each.`,
             config: {
@@ -303,7 +317,7 @@ export const getLocalGuides = async (lat: number, lng: number): Promise<LocalGui
     if (cachedData) return cachedData;
     
     try {
-        const apiCall = () => ai.models.generateContent({
+        const apiCall = () => getAi().models.generateContent({
             model: "gemini-2.5-flash",
             contents: `List up to 5 local guides near latitude ${lat}, longitude ${lng}. Include their name, a brief specialty (e.g., 'Trekking', 'Historical Tours'), a valid Indian contact number, and their approximate location.`,
             config: {
