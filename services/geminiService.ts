@@ -102,8 +102,8 @@ let ai: GoogleGenAI | null = null;
  */
 const getAi = () => {
   if (!ai) {
-    // This will throw an error if process.env.API_KEY is not available,
-    // but it will happen during an API call, not on app load.
+    // Per security best practices, the API key is not hardcoded.
+    // It is securely accessed from the pre-configured environment variable process.env.API_KEY.
     ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   }
   return ai;
