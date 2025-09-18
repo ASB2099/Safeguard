@@ -23,10 +23,10 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ navigateTo, the
 
   return (
     <div className="flex flex-col h-full bg-light-bg dark:bg-dark-bg">
-      <Header title="Welcome to Safeguard" theme={theme} toggleTheme={toggleTheme} />
+      <Header title="Welcome to Surakshify" theme={theme} toggleTheme={toggleTheme} />
       <div className="flex-grow flex flex-col items-center justify-center p-8">
         <div className="w-full max-w-sm text-center">
-            <h2 className="text-3xl font-bold text-light-text dark:text-dark-text mb-2 animate-fadeIn">Welcome to Safeguard</h2>
+            <h2 className="text-3xl font-bold text-light-text dark:text-dark-text mb-2 animate-fadeIn">Welcome to Surakshify</h2>
             <p className="text-light-text-secondary dark:text-dark-text-secondary mb-8 animate-fadeIn h-6" style={{ animationDelay: '100ms' }}>
                 <span className="animate-typing">Your journey with safety begins here.</span>
             </p>

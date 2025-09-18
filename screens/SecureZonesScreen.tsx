@@ -8,24 +8,27 @@ interface SecureZonesScreenProps {
   viewSecureZoneOnMap: (zone: SecureZone) => void;
   theme: 'light' | 'dark';
   toggleTheme: (event: React.MouseEvent) => void;
-  userLocation: { lat: number; lng: number };
+  location: { lat: number; lng: number } | null;
   locationLoading: boolean;
+  locationError: string | null;
 }
 
-const SecureZonesScreen: React.FC<SecureZonesScreenProps> = ({ navigateTo, viewSecureZoneOnMap, theme, toggleTheme, userLocation, locationLoading }) => {
+const SecureZonesScreen: React.FC<SecureZonesScreenProps> = ({ navigateTo, viewSecureZoneOnMap, theme, toggleTheme, location, locationLoading, locationError }) => {
   const [zones, setZones] = useState<SecureZone[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!locationLoading) {
+    if (location) {
       setLoading(true);
-      getSecureZones(userLocation.lat, userLocation.lng)
+      getSecureZones(location.lat, location.lng)
         .then(setZones)
         .catch((err) => setError(err.message || "Could not fetch secure zones. Please try again later."))
         .finally(() => setLoading(false));
+    } else {
+        setLoading(false);
     }
-  }, [userLocation, locationLoading]);
+  }, [location]);
 
   const renderContent = () => {
     if (loading || locationLoading) {
@@ -38,6 +41,15 @@ const SecureZonesScreen: React.FC<SecureZonesScreenProps> = ({ navigateTo, viewS
             </div>
         </div>
       ));
+    }
+
+    if (locationError) {
+        return (
+            <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
+              <p className="font-bold">Location Error</p>
+              <p className="text-sm">{locationError}</p>
+            </div>
+        )
     }
 
     if (error) {

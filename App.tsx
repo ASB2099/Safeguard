@@ -18,7 +18,6 @@ import EmergencyContactsScreen from './screens/EmergencyContactsScreen';
 import LocalGuidesScreen from './screens/LocalGuidesScreen';
 import CustomCursor from './components/CustomCursor';
 import RippleEffect from './components/RippleEffect';
-import { USER_LOCATION } from './constants';
 
 const getPageTheme = (page: Page) => {
     switch (page) {
@@ -132,21 +131,31 @@ function App() {
           setLocationError(null);
           setLocationLoading(false);
         },
-        () => {
-          let errorMessage = "Unable to retrieve your location. Please enable location services in your browser settings.";
-          const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-          if (isLocalhost) {
-              errorMessage = "To see your real location, you must grant location permissions to your browser for this site.";
+        (error: GeolocationPositionError) => {
+          let errorMessage: string;
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = "Location access was denied. Please enable location permissions in your browser or device settings to use location-based features.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = "Location information is currently unavailable. Please check your connection or try again later.";
+              break;
+            case error.TIMEOUT:
+              errorMessage = "The request to get your location timed out. Please try again.";
+              break;
+            default:
+              errorMessage = "An unknown error occurred while trying to get your location.";
+              break;
           }
-          setLocationError(errorMessage + " Displaying default location for demonstration.");
-          setLocation(USER_LOCATION); // Fallback to default
+          setLocationError(errorMessage);
+          setLocation(null); 
           setLocationLoading(false);
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
-      setLocationError("Geolocation is not supported by this browser. Showing default location.");
-      setLocation(USER_LOCATION); // Fallback to default
+      setLocationError("Geolocation is not supported by this browser.");
+      setLocation(null);
       setLocationLoading(false);
     }
 
@@ -211,9 +220,8 @@ function App() {
   };
 
   const renderPage = () => {
-    const userLocation = location || USER_LOCATION;
     const commonProps = { theme, toggleTheme };
-    const locationProps = { location, locationError, locationLoading, userLocation };
+    const locationProps = { location, locationError, locationLoading };
 
     switch (currentPage) {
       case Page.Splash:

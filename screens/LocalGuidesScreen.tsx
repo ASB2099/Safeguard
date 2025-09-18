@@ -7,24 +7,27 @@ interface LocalGuidesScreenProps {
   navigateTo: (page: Page) => void;
   theme: 'light' | 'dark';
   toggleTheme: (event: React.MouseEvent) => void;
-  userLocation: { lat: number; lng: number };
+  location: { lat: number; lng: number } | null;
   locationLoading: boolean;
+  locationError: string | null;
 }
 
-const LocalGuidesScreen: React.FC<LocalGuidesScreenProps> = ({ navigateTo, theme, toggleTheme, userLocation, locationLoading }) => {
+const LocalGuidesScreen: React.FC<LocalGuidesScreenProps> = ({ navigateTo, theme, toggleTheme, location, locationLoading, locationError }) => {
   const [guides, setGuides] = useState<LocalGuide[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!locationLoading) {
+    if (location) {
       setLoading(true);
-      getLocalGuides(userLocation.lat, userLocation.lng)
+      getLocalGuides(location.lat, location.lng)
         .then(setGuides)
         .catch((err) => setError(err.message || "Could not fetch local guides. Please try again later."))
         .finally(() => setLoading(false));
+    } else {
+        setLoading(false);
     }
-  }, [userLocation, locationLoading]);
+  }, [location]);
   
   const handleContact = (number: string) => {
     window.location.href = `tel:${number}`;
@@ -41,6 +44,15 @@ const LocalGuidesScreen: React.FC<LocalGuidesScreenProps> = ({ navigateTo, theme
             </div>
         </div>
       ));
+    }
+
+    if (locationError) {
+        return (
+            <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
+              <p className="font-bold">Location Error</p>
+              <p className="text-sm">{locationError}</p>
+            </div>
+        )
     }
 
     if (error) {

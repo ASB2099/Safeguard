@@ -7,16 +7,31 @@ interface SecureZoneMapScreenProps {
   zone: SecureZone;
   theme: 'light' | 'dark';
   toggleTheme: (event: React.MouseEvent) => void;
-  userLocation: { lat: number; lng: number };
+  location: { lat: number; lng: number } | null;
 }
 
-const SecureZoneMapScreen: React.FC<SecureZoneMapScreenProps> = ({ navigateTo, zone, theme, toggleTheme, userLocation }) => {
+const SecureZoneMapScreen: React.FC<SecureZoneMapScreenProps> = ({ navigateTo, zone, theme, toggleTheme, location }) => {
+
+  if (!location) {
+    return (
+        <div className="flex flex-col h-full bg-gradient-page">
+            <Header title="Error" onBack={() => navigateTo(Page.SecureZones)} theme={theme} toggleTheme={toggleTheme} page={Page.SecureZoneMap} />
+            <div className="flex-grow flex items-center justify-center p-4">
+                <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
+                  <p className="font-bold">Location Unavailable</p>
+                  <p className="text-sm">Your location is required to display the map. Please enable location services and return to the previous screen.</p>
+                </div>
+            </div>
+        </div>
+    );
+  }
+
   // Calculate a bounding box to fit both user and the secure zone
   const bounds = {
-    minLat: Math.min(userLocation.lat, zone.location.lat),
-    minLng: Math.min(userLocation.lng, zone.location.lng),
-    maxLat: Math.max(userLocation.lat, zone.location.lat),
-    maxLng: Math.max(userLocation.lng, zone.location.lng),
+    minLat: Math.min(location.lat, zone.location.lat),
+    minLng: Math.min(location.lng, zone.location.lng),
+    maxLat: Math.max(location.lat, zone.location.lat),
+    maxLng: Math.max(location.lng, zone.location.lng),
   };
 
   const padding = 0.01;
@@ -25,7 +40,8 @@ const SecureZoneMapScreen: React.FC<SecureZoneMapScreenProps> = ({ navigateTo, z
   const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${zone.location.lat},${zone.location.lng}`;
   
   const handleGetDirections = () => {
-    const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${zone.location.lat},${zone.location.lng}`;
+    if (!location) return;
+    const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${location.lat},${location.lng}&destination=${zone.location.lat},${zone.location.lng}`;
     window.open(directionsUrl, '_blank');
   };
 

@@ -8,24 +8,27 @@ interface TravelScreenProps {
   viewTravelOnMap: (service: TravelService) => void;
   theme: 'light' | 'dark';
   toggleTheme: (event: React.MouseEvent) => void;
-  userLocation: { lat: number; lng: number };
+  location: { lat: number; lng: number } | null;
   locationLoading: boolean;
+  locationError: string | null;
 }
 
-const TravelScreen: React.FC<TravelScreenProps> = ({ navigateTo, viewTravelOnMap, theme, toggleTheme, userLocation, locationLoading }) => {
+const TravelScreen: React.FC<TravelScreenProps> = ({ navigateTo, viewTravelOnMap, theme, toggleTheme, location, locationLoading, locationError }) => {
   const [routes, setRoutes] = useState<TravelService[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!locationLoading) {
+    if (location) {
       setLoading(true);
-      getTravelRoutes(userLocation.lat, userLocation.lng)
+      getTravelRoutes(location.lat, location.lng)
         .then(setRoutes)
         .catch((err) => setError(err.message || "Could not fetch travel routes. Please try again later."))
         .finally(() => setLoading(false));
+    } else {
+        setLoading(false);
     }
-  }, [userLocation, locationLoading]);
+  }, [location]);
 
 
   const renderContent = () => {
@@ -42,6 +45,16 @@ const TravelScreen: React.FC<TravelScreenProps> = ({ navigateTo, viewTravelOnMap
             </div>
         ));
     }
+
+    if (locationError) {
+        return (
+            <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
+              <p className="font-bold">Location Error</p>
+              <p className="text-sm">{locationError}</p>
+            </div>
+        )
+    }
+
     if (error) {
         return <div className="text-center p-4 text-red-500 dark:text-red-400">{error}</div>;
     }

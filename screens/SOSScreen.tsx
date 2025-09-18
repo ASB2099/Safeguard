@@ -7,21 +7,22 @@ interface SOSScreenProps {
   navigateTo: (page: Page) => void;
   theme: 'light' | 'dark';
   toggleTheme: (event: React.MouseEvent) => void;
-  userLocation: { lat: number; lng: number };
+  location: { lat: number; lng: number } | null;
   locationLoading: boolean;
+  locationError: string | null;
 }
 
-const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, userLocation, locationLoading }) => {
+const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, location, locationLoading, locationError }) => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!locationLoading) {
+    if (location) {
         setLoading(true);
         
         const emergencyServiceKeywords = ['hospital', 'police', 'ambulance', 'medical'];
 
-        getNearbyServices(userLocation.lat, userLocation.lng)
+        getNearbyServices(location.lat, location.lng)
             .then(allServices => {
                 const emergencyServices = allServices.filter(service => 
                     emergencyServiceKeywords.some(keyword => 
@@ -32,21 +33,23 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, u
             })
             .catch(console.error)
             .finally(() => setLoading(false));
+    } else {
+        setLoading(false);
     }
-  }, [userLocation, locationLoading]);
+  }, [location]);
 
-
-  const allLocations = [userLocation, ...services.map(s => s.location)];
-  const bounds = {
-    minLat: Math.min(...allLocations.map(l => l.lat)),
-    minLng: Math.min(...allLocations.map(l => l.lng)),
-    maxLat: Math.max(...allLocations.map(l => l.lat)),
-    maxLng: Math.max(...allLocations.map(l => l.lng)),
-  };
-
-  const padding = 0.01;
-  const bbox = `${bounds.minLng - padding},${bounds.minLat - padding},${bounds.maxLng + padding},${bounds.maxLat + padding}`;
-  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${userLocation.lat},${userLocation.lng}`;
+  const mapUrl = location ? (() => {
+      const allLocations = [location, ...services.map(s => s.location)];
+      const bounds = {
+        minLat: Math.min(...allLocations.map(l => l.lat)),
+        minLng: Math.min(...allLocations.map(l => l.lng)),
+        maxLat: Math.max(...allLocations.map(l => l.lat)),
+        maxLng: Math.max(...allLocations.map(l => l.lng)),
+      };
+      const padding = 0.01;
+      const bbox = `${bounds.minLng - padding},${bounds.minLat - padding},${bounds.maxLng + padding},${bounds.maxLat + padding}`;
+      return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${location.lat},${location.lng}`;
+  })() : '';
   
   const SOSIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 
@@ -62,7 +65,7 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, u
                 </div>
                 <p className="mt-4 text-light-text dark:text-dark-text">Broadcasting distress signal...</p>
             </div>
-        ) : (
+        ) : location ? (
             <>
                 <iframe
                 title="SOS Map with user and nearby services"
@@ -74,6 +77,13 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, u
                     <p className="text-light-text-secondary dark:text-dark-text-secondary">Other icons are nearby services visible on the map.</p>
                 </div>
             </>
+        ) : (
+             <div className="w-full h-full flex flex-col items-center justify-center bg-light-surface/60 dark:bg-dark-surface/60 p-4">
+                 <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
+                  <p className="font-bold">Location Unavailable</p>
+                  <p className="text-sm">{locationError}</p>
+                </div>
+            </div>
         )}
       </div>
       
@@ -85,7 +95,7 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, u
         <div className="mt-4">
             <h4 className="font-semibold text-sm mb-2 text-center">Notified Services:</h4>
             <div className="text-xs space-y-1 text-center">
-                {loading ? (
+                {loading || locationLoading ? (
                     <div className="space-y-1">
                         <div className="h-3 bg-red-400/50 rounded w-3/4 mx-auto"></div>
                         <div className="h-3 bg-red-400/50 rounded w-1/2 mx-auto"></div>
@@ -95,6 +105,8 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, u
                     services.map(service => (
                         <div key={service.id}><strong>{service.name}</strong> ({service.type})</div>
                     ))
+                ) : locationError ? (
+                    <p>Could not determine nearby services.</p>
                 ) : (
                     <p>No immediate emergency services found nearby.</p>
                 )}

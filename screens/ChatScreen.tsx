@@ -13,7 +13,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
   const [messages, setMessages] = useState<Message[]>([
     {
       id: Date.now(),
-      text: "Hello! I'm Safeguard, your personal travel assistant. How can I help you today?",
+      text: "Hello! I'm Surakshify, your personal travel assistant. How can I help you today?",
       sender: 'bot',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     }

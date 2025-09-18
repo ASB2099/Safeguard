@@ -7,13 +7,28 @@ interface TravelMapScreenProps {
   service: TravelService;
   theme: 'light' | 'dark';
   toggleTheme: (event: React.MouseEvent) => void;
-  userLocation: { lat: number; lng: number };
+  location: { lat: number; lng: number } | null;
 }
 
-const TravelMapScreen: React.FC<TravelMapScreenProps> = ({ navigateTo, service, theme, toggleTheme, userLocation }) => {
+const TravelMapScreen: React.FC<TravelMapScreenProps> = ({ navigateTo, service, theme, toggleTheme, location }) => {
   
+  if (!location) {
+    return (
+        <div className="flex flex-col h-full bg-gradient-page">
+            <Header title="Error" onBack={() => navigateTo(Page.Travel)} theme={theme} toggleTheme={toggleTheme} page={Page.TravelMap} />
+            <div className="flex-grow flex items-center justify-center p-4">
+                <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
+                  <p className="font-bold">Location Unavailable</p>
+                  <p className="text-sm">Your location is required to display the map. Please enable location services and return to the previous screen.</p>
+                </div>
+            </div>
+        </div>
+    );
+  }
+
   const handleGetDirections = () => {
-    const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${service.location.lat},${service.location.lng}`;
+    if (!location) return;
+    const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${location.lat},${location.lng}&destination=${service.location.lat},${service.location.lng}`;
     window.open(directionsUrl, '_blank');
   };
 
@@ -22,10 +37,10 @@ const TravelMapScreen: React.FC<TravelMapScreenProps> = ({ navigateTo, service, 
   // We calculate a bounding box to ensure both the user and the destination are visible.
 
   const bounds = {
-    minLat: Math.min(userLocation.lat, service.location.lat),
-    minLng: Math.min(userLocation.lng, service.location.lng),
-    maxLat: Math.max(userLocation.lat, service.location.lat),
-    maxLng: Math.max(userLocation.lng, service.location.lng),
+    minLat: Math.min(location.lat, service.location.lat),
+    minLng: Math.min(location.lng, service.location.lng),
+    maxLat: Math.max(location.lat, service.location.lat),
+    maxLng: Math.max(location.lng, service.location.lng),
   };
 
   // Add some padding to the bounding box so markers aren't at the very edge of the map.

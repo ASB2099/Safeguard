@@ -7,8 +7,9 @@ interface WeatherScreenProps {
   navigateTo: (page: Page) => void;
   theme: 'light' | 'dark';
   toggleTheme: (event: React.MouseEvent) => void;
-  userLocation: { lat: number; lng: number };
+  location: { lat: number; lng: number } | null;
   locationLoading: boolean;
+  locationError: string | null;
 }
 
 interface WeatherData {
@@ -25,7 +26,7 @@ interface WeatherData {
   }[];
 }
 
-const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigateTo, theme, toggleTheme, userLocation, locationLoading }) => {
+const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigateTo, theme, toggleTheme, location, locationLoading, locationError }) => {
   const [disasterAlert] = useState(true); // This can be driven by API in future
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,14 +35,16 @@ const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigateTo, theme, toggle
   const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   useEffect(() => {
-    if (!locationLoading) {
+    if (location) {
       setLoading(true);
-      getWeather(userLocation.lat, userLocation.lng)
+      getWeather(location.lat, location.lng)
         .then(setWeatherData)
         .catch((err) => setError(err.message || "Could not fetch weather data. Please try again later."))
         .finally(() => setLoading(false));
+    } else {
+        setLoading(false);
     }
-  }, [userLocation, locationLoading]);
+  }, [location]);
 
   const getWeatherIcon = (description: string, large = false) => {
     const desc = description.toLowerCase();
@@ -64,6 +67,13 @@ const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigateTo, theme, toggle
       <p className="mt-4 text-lg text-light-text dark:text-dark-text animate-pulse">Forecasting the skies...</p>
     </div>
   );
+  
+  const renderErrorState = (errorMessage: string | null) => (
+    <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
+        <p className="font-bold">Error</p>
+        <p className="text-sm">{errorMessage}</p>
+    </div>
+  );
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
@@ -82,9 +92,9 @@ const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigateTo, theme, toggle
           </div>
         )}
 
-        {loading || locationLoading ? renderLoadingState() : error ? <div className="text-center p-4 text-red-500 dark:text-red-400">{error}</div> : weatherData && (
+        {loading || locationLoading ? renderLoadingState() : locationError ? renderErrorState(locationError) : error ? renderErrorState(error) : weatherData && (
             <>
-                <div className="bg-light-surface dark:bg-dark-surface backdrop-blur-md border border-light-border dark:border-dark-border rounded-2xl p-6 text-center shadow-md mb-6 animate-fadeInUp transition-colors duration-500" style={{animationDelay: '100ms'}}>
+                <div className="bg-light-surface dark:bg-dark-surface backdrop-blur-md border border-light-border dark:border-dark-border rounded-2xl p-6 text-center shadow-md mb-6 animate-fadeInUp transition-colors duration-500" style={{animationDelay: '200ms'}}>
                     <p className="text-light-text-secondary dark:text-dark-text-secondary">{weatherData.cityName}</p>
                     <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mt-1">{currentDate}</p>
                     <div className="flex items-center justify-center my-4">
@@ -95,7 +105,7 @@ const WeatherScreen: React.FC<WeatherScreenProps> = ({ navigateTo, theme, toggle
                     <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary">Feels like {Math.round(weatherData.current.feelsLike)}°C</p>
                 </div>
 
-                <div className="bg-light-surface dark:bg-dark-surface backdrop-blur-md border border-light-border dark:border-dark-border rounded-2xl p-6 shadow-md animate-fadeInUp transition-colors duration-500" style={{animationDelay: '200ms'}}>
+                <div className="bg-light-surface dark:bg-dark-surface backdrop-blur-md border border-light-border dark:border-dark-border rounded-2xl p-6 shadow-md animate-fadeInUp transition-colors duration-500" style={{animationDelay: '400ms'}}>
                     <h3 className="font-bold text-light-text dark:text-dark-text mb-4">Upcoming Forecast</h3>
                     <div className="flex justify-between overflow-x-auto -mx-6 px-6">
                         {weatherData.forecast.map((item, index) => (

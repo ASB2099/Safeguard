@@ -64,37 +64,21 @@ const withRetry = async <T>(apiCall: () => Promise<T>, maxRetries = 3, initialDe
   }
 };
 
-if (!process.env.API_KEY) {
-  console.warn("API_KEY environment variable not set. Using a mock response.");
-}
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "mock_key" });
-
-const travelAssistantSystemInstruction = `You are 'Safeguard', a friendly and helpful AI assistant for travelers. 
+const travelAssistantSystemInstruction = `You are 'Surakshify', a friendly and helpful AI assistant for travelers. 
 Your goal is to provide concise, useful, and safe information. 
 Keep your answers brief and to the point.
 If asked about sensitive topics like personal safety, give cautious and general advice, e.g., 'Always be aware of your surroundings and keep your valuables secure.'
 If asked for medical advice, tell the user to contact emergency services or a professional doctor immediately.
 Do not engage in long, off-topic conversations.
-Start your very first message with a warm welcome like 'Hello! I'm Safeguard, your personal travel assistant. How can I help you today?'`;
+Start your very first message with a warm welcome like 'Hello! I'm Surakshify, your personal travel assistant. How can I help you today?'`;
 
 
 export const getBotResponse = async (
   prompt: string,
   isFirstMessage: boolean
 ): Promise<string> => {
-  if (!process.env.API_KEY) {
-    return new Promise((resolve) =>
-      setTimeout(
-        () =>
-          resolve(
-            "Thank you for your message. The AI assistant is currently in mock mode."
-          ),
-        1000
-      )
-    );
-  }
-
   try {
     const apiCall = () => ai.models.generateContent({
         model: "gemini-2.5-flash",
@@ -117,20 +101,6 @@ export const getWeather = async (lat: number, lng: number) => {
   const cachedData = getFromCache(cacheKey);
   if (cachedData) return cachedData;
   
-  if (!process.env.API_KEY) {
-    return {
-      cityName: "Pune",
-      current: { temp: 28, description: "Partly Cloudy", feelsLike: 30 },
-      forecast: [
-        { time: 'Now', temp: 28, description: 'Partly Cloudy' },
-        { time: '2 PM', temp: 30, description: 'Sunny' },
-        { time: '4 PM', temp: 29, description: 'Cloudy' },
-      ],
-      hasAlert: true,
-      alertDescription: "Heavy monsoon rains expected. Avoid travel near rivers.",
-    };
-  }
-
   try {
     const apiCall = () => ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -180,13 +150,6 @@ export const getNearbyServices = async (lat: number, lng: number): Promise<Servi
     const cacheKey = `services-${lat.toFixed(4)}-${lng.toFixed(4)}`;
     const cachedData = getFromCache(cacheKey);
     if (cachedData) return cachedData;
-
-    if (!process.env.API_KEY) {
-        return [
-          { id: '1', name: 'Mock KEM Hospital', type: 'Hospital', location: { lat: lat + 0.001, lng: lng + 0.001 } },
-          { id: '2', name: 'Mock Restaurant', type: 'Restaurant', location: { lat: lat - 0.002, lng: lng - 0.001 } },
-        ];
-    }
     
     try {
         const apiCall = () => ai.models.generateContent({
@@ -235,13 +198,6 @@ export const getTravelRoutes = async (lat: number, lng: number): Promise<TravelS
     const cachedData = getFromCache(cacheKey);
     if (cachedData) return cachedData;
     
-    if (!process.env.API_KEY) {
-        return [
-            { id: 'ts1', name: 'Mock Pune Railway Station', type: 'Train Station', location: { lat: lat + 0.01, lng: lng + 0.02 }, path: [{lat, lng}, { lat: lat + 0.01, lng: lng + 0.02 }] },
-            { id: 'ts2', name: 'Mock Swargate Bus Station', type: 'Bus Station', location: { lat: lat - 0.01, lng: lng + 0.01 }, path: [{lat, lng}, { lat: lat - 0.01, lng: lng + 0.01 }] },
-        ];
-    }
-
     try {
         const apiCall = () => ai.models.generateContent({
             model: "gemini-2.5-flash",
@@ -297,13 +253,6 @@ export const getSecureZones = async (lat: number, lng: number): Promise<SecureZo
     const cacheKey = `secure-zones-${lat.toFixed(4)}-${lng.toFixed(4)}`;
     const cachedData = getFromCache(cacheKey);
     if (cachedData) return cachedData;
-
-    if (!process.env.API_KEY) {
-        return [
-          { id: 'sz1', name: 'Mock Community Hall', type: 'Community Shelter', description: 'Designated as a primary evacuation point during floods.', location: { lat: lat + 0.005, lng: lng - 0.005 } },
-          { id: 'sz2', name: 'Mock Underground Metro Station', type: 'Reinforced Building', description: 'Offers protection from severe storms and earthquakes.', location: { lat: lat - 0.003, lng: lng + 0.004 } },
-        ];
-    }
     
     try {
         const apiCall = () => ai.models.generateContent({
@@ -352,13 +301,6 @@ export const getLocalGuides = async (lat: number, lng: number): Promise<LocalGui
     const cacheKey = `local-guides-${lat.toFixed(4)}-${lng.toFixed(4)}`;
     const cachedData = getFromCache(cacheKey);
     if (cachedData) return cachedData;
-
-    if (!process.env.API_KEY) {
-        return [
-          { id: 'lg1', name: 'Rohan Sharma', specialty: 'Historical Fort Tours', contact: '+919876543210', location: { lat: lat + 0.002, lng: lng - 0.002 } },
-          { id: 'lg2', name: 'Priya Patel', specialty: 'Trekking & Nature Walks', contact: '+919123456789', location: { lat: lat - 0.001, lng: lng + 0.003 } },
-        ];
-    }
     
     try {
         const apiCall = () => ai.models.generateContent({

@@ -7,8 +7,9 @@ interface HomeScreenProps {
   navigateTo: (page: Page) => void;
   theme: 'light' | 'dark';
   toggleTheme: (event: React.MouseEvent) => void;
-  userLocation: { lat: number; lng: number };
+  location: { lat: number; lng: number } | null;
   locationLoading: boolean;
+  locationError: string | null;
 }
 
 interface WeatherData {
@@ -56,20 +57,22 @@ const WeatherAlert: React.FC<{ weather: WeatherData | null; loading: boolean; er
     );
 };
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme, userLocation, locationLoading }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme, location, locationLoading, locationError }) => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherError, setWeatherError] = useState<string | null>(null);
   
   useEffect(() => {
-    if (!locationLoading) {
+    if (location) {
       setWeatherLoading(true);
-      getWeather(userLocation.lat, userLocation.lng)
+      getWeather(location.lat, location.lng)
         .then(setWeatherData)
         .catch((err) => setWeatherError(err.message))
         .finally(() => setWeatherLoading(false));
+    } else {
+        setWeatherLoading(false);
     }
-  }, [userLocation, locationLoading]);
+  }, [location]);
 
   const features = [
     { name: 'AI Assistant', page: Page.Chat, icon: <ChatIcon />, color: 'chat' },
@@ -119,9 +122,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme,
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
-      <Header title="Dashboard" theme={theme} toggleTheme={toggleTheme} showDateTime />
+      <Header title="Surakshify" theme={theme} toggleTheme={toggleTheme} showDateTime />
       
       <div className="flex-grow flex flex-col p-4 gap-4 overflow-y-auto no-scrollbar">
+        {locationError && (
+            <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md animate-fadeIn" role="alert">
+              <p className="font-bold">Location Error</p>
+              <p className="text-sm">{locationError}</p>
+            </div>
+        )}
         <div className="animate-fadeInUp" style={{ animationDelay: `100ms` }}>
           <WeatherAlert weather={weatherData} loading={weatherLoading} error={weatherError} onNavigate={() => navigateTo(Page.Weather)} />
         </div>
@@ -152,7 +161,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme,
                 key={feature.name}
                 onClick={() => navigateTo(feature.page)}
                 className={`h-full min-h-[100px] flex flex-col items-center justify-center flippable-button group p-2 bg-light-surface dark:bg-dark-surface backdrop-blur-md rounded-2xl shadow-colored-md transition-all duration-500 ease-in-out hover:shadow-colored-lg active:scale-95 animate-fadeInUp border border-light-border/50 dark:border-dark-border/50 hover:bg-gray-50 dark:hover:bg-dark-surface/80`}
-                style={{ ...shadowStyle(feature.color), animationDelay: `${(index + 3) * 100}ms` }}
+                style={{ ...shadowStyle(feature.color), animationDelay: `${(index + 2) * 100}ms` }}
               >
                 <div className={`mx-auto mb-2 w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 ${iconColorClasses(feature.color)}`}>
                   {feature.icon}
@@ -163,7 +172,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme,
           </div>
         </div>
 
-        <div className="animate-fadeInUp" style={{ animationDelay: `${(features.length + 3) * 100}ms` }}>
+        <div className="animate-fadeInUp" style={{ animationDelay: `${(features.length + 2) * 100}ms` }}>
             <button 
                 onClick={() => navigateTo(sosFeature.page)}
                 className="w-full p-6 bg-danger dark:bg-danger-dark rounded-2xl shadow-colored-lg flex flex-col items-center justify-center text-white dark:text-dark-bg font-bold text-center text-lg transition-transform active:scale-95 animate-pulse transition-colors duration-500"

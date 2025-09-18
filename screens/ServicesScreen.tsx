@@ -8,24 +8,27 @@ interface ServicesScreenProps {
   viewServiceOnMap: (service: Service) => void;
   theme: 'light' | 'dark';
   toggleTheme: (event: React.MouseEvent) => void;
-  userLocation: { lat: number; lng: number };
+  location: { lat: number; lng: number } | null;
   locationLoading: boolean;
+  locationError: string | null;
 }
 
-const ServicesScreen: React.FC<ServicesScreenProps> = ({ navigateTo, viewServiceOnMap, theme, toggleTheme, userLocation, locationLoading }) => {
+const ServicesScreen: React.FC<ServicesScreenProps> = ({ navigateTo, viewServiceOnMap, theme, toggleTheme, location, locationLoading, locationError }) => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!locationLoading) {
+    if (location) {
       setLoading(true);
-      getNearbyServices(userLocation.lat, userLocation.lng)
+      getNearbyServices(location.lat, location.lng)
         .then(setServices)
         .catch((err) => setError(err.message || "Could not fetch nearby services. Please try again later."))
         .finally(() => setLoading(false));
+    } else {
+        setLoading(false);
     }
-  }, [userLocation, locationLoading]);
+  }, [location]);
 
   const renderContent = () => {
     if (loading || locationLoading) {
@@ -40,6 +43,15 @@ const ServicesScreen: React.FC<ServicesScreenProps> = ({ navigateTo, viewService
             </div>
         </div>
       ));
+    }
+
+    if (locationError) {
+        return (
+            <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
+              <p className="font-bold">Location Error</p>
+              <p className="text-sm">{locationError}</p>
+            </div>
+        )
     }
 
     if (error) {

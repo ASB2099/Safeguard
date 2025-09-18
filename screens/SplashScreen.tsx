@@ -9,7 +9,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigateTo }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigateTo(Page.Registration);
-    }, 1200); 
+    }, 3000); 
 
     return () => clearTimeout(timer);
   }, [navigateTo]);
@@ -20,7 +20,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigateTo }) => {
         <div className="flex justify-center mb-4">
             <ShieldIcon />
         </div>
-        <h1 className="text-6xl font-bold tracking-wider animate-pulse-slow">Safeguard</h1>
+        <h1 className="text-6xl font-bold tracking-wider animate-pulse-slow">Surakshify</h1>
         <p className="mt-4 text-lg font-light h-7">
           <span className="animate-typing-splash">your safety comes first</span>
         </p>
