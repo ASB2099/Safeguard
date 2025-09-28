@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
 import { Page } from '../types';
+import { useTranslation } from '../LanguageContext';
 
 interface SplashScreenProps {
   navigateTo: (page: Page) => void;
 }
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ navigateTo }) => {
+  const { t } = useTranslation();
+
   useEffect(() => {
     const timer = setTimeout(() => {
       navigateTo(Page.Registration);
@@ -20,13 +23,13 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigateTo }) => {
         <div className="flex justify-center mb-4">
             <ShieldIcon />
         </div>
-        <h1 className="text-6xl font-bold tracking-wider animate-pulse-slow">Surakshify</h1>
+        <h1 className="text-6xl font-bold tracking-wider animate-pulse-slow">{t('surakshify_title')}</h1>
         <p className="mt-4 text-lg font-light h-7">
-          <span className="animate-typing-splash">your safety comes first</span>
+          <span className="animate-typing-splash">{t('your_safety_comes_first')}</span>
         </p>
       </div>
       <div className="absolute bottom-10 text-xs">
-        <p>Loading your safe journey...</p>
+        <p>{t('loading_safe_journey')}</p>
       </div>
     </div>
   );

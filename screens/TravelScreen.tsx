@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Page, TravelService } from '../types';
 import Header from '../components/Header';
 import { getTravelRoutes } from '../services/geminiService';
+import { useTranslation } from '../LanguageContext';
 
 interface TravelScreenProps {
   navigateTo: (page: Page) => void;
@@ -17,18 +18,19 @@ const TravelScreen: React.FC<TravelScreenProps> = ({ navigateTo, viewTravelOnMap
   const [routes, setRoutes] = useState<TravelService[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     if (location) {
       setLoading(true);
-      getTravelRoutes(location.lat, location.lng)
+      getTravelRoutes(location.lat, location.lng, language)
         .then(setRoutes)
-        .catch((err) => setError(err.message || "Could not fetch travel routes. Please try again later."))
+        .catch((err) => setError(t(err.message as any) || "Could not fetch travel routes. Please try again later."))
         .finally(() => setLoading(false));
     } else {
         setLoading(false);
     }
-  }, [location]);
+  }, [location, language, t]);
 
 
   const renderContent = () => {
@@ -49,7 +51,7 @@ const TravelScreen: React.FC<TravelScreenProps> = ({ navigateTo, viewTravelOnMap
     if (locationError) {
         return (
             <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
-              <p className="font-bold">Location Error</p>
+              <p className="font-bold">{t('error_location')}</p>
               <p className="text-sm">{locationError}</p>
             </div>
         )
@@ -68,8 +70,7 @@ const TravelScreen: React.FC<TravelScreenProps> = ({ navigateTo, viewTravelOnMap
       >
         <div className="flex items-center">
             <div className="p-3 bg-travel-primary/10 dark:bg-travel-primary-dark/20 rounded-full mr-4 text-travel-primary dark:text-travel-primary-dark transition-transform duration-300 group-hover:scale-110">
-                {service.type === 'Bus Station' && <BusIcon />}
-                {service.type === 'Train Station' && <TrainIcon />}
+                {service.type.toLowerCase().includes('bus') ? <BusIcon /> : <TrainIcon />}
             </div>
             <div>
                 <h3 className="font-bold text-light-text dark:text-dark-text">{service.name}</h3>
@@ -84,10 +85,10 @@ const TravelScreen: React.FC<TravelScreenProps> = ({ navigateTo, viewTravelOnMap
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
-      <Header title="Travel Routes" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.Travel} />
+      <Header title={t('travel_routes_title')} onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.Travel} showLanguageSwitcher/>
       
       <div className="flex-grow overflow-y-auto p-4 space-y-3">
-        <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary px-2 pb-2 animate-fadeIn">Select a service to view the route on the map.</p>
+        <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary px-2 pb-2 animate-fadeIn">{t('select_route_to_view_on_map')}</p>
         {renderContent()}
       </div>
     </div>

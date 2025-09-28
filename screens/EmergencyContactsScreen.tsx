@@ -1,6 +1,7 @@
 import React from 'react';
 import { Page } from '../types';
 import Header from '../components/Header';
+import { useTranslation } from '../LanguageContext';
 
 interface EmergencyContactsScreenProps {
   navigateTo: (page: Page) => void;
@@ -19,17 +20,18 @@ const ForestIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 
 const TowingIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1zM21 11.243l-2-2.016v-3.23a1 1 0 00-1-1h-6a1 1 0 00-1 1v5.472l2 2.016a1 1 0 00.707.293h4.586a1 1 0 00.707-.293z" /></svg>;
 const CallIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>;
 
-const contacts = [
-  { name: 'National Emergency Number', number: '112', icon: <AlertTriangleIcon />, color: 'danger' },
-  { name: 'Police', number: '100', icon: <PoliceIcon />, color: 'primary' },
-  { name: 'Fire Department', number: '101', icon: <FireIcon />, color: 'weather-primary' },
-  { name: 'Ambulance / Medical', number: '102', icon: <AmbulanceIcon />, color: 'prep-primary' },
-  { name: 'Disaster Management', number: '108', icon: <DisasterIcon />, color: 'contacts-primary' },
-  { name: 'Forest Ranger / Rescue', number: '1926', icon: <ForestIcon />, color: 'prep-primary' },
-  { name: 'Towing Services (Highway)', number: '1033', icon: <TowingIcon />, color: 'travel-primary' },
-];
-
 const EmergencyContactsScreen: React.FC<EmergencyContactsScreenProps> = ({ navigateTo, theme, toggleTheme }) => {
+  const { t } = useTranslation();
+
+  const contacts = [
+    { name: t('national_emergency_number'), number: '112', icon: <AlertTriangleIcon />, color: 'danger' },
+    { name: t('police'), number: '100', icon: <PoliceIcon />, color: 'primary' },
+    { name: t('fire_department'), number: '101', icon: <FireIcon />, color: 'weather-primary' },
+    { name: t('ambulance_medical'), number: '102', icon: <AmbulanceIcon />, color: 'prep-primary' },
+    { name: t('disaster_management'), number: '108', icon: <DisasterIcon />, color: 'contacts-primary' },
+    { name: t('forest_rescue'), number: '1926', icon: <ForestIcon />, color: 'prep-primary' },
+    { name: t('towing_services'), number: '1033', icon: <TowingIcon />, color: 'travel-primary' },
+  ];
 
   const handleCall = (number: string) => {
     window.location.href = `tel:${number}`;
@@ -49,11 +51,11 @@ const EmergencyContactsScreen: React.FC<EmergencyContactsScreenProps> = ({ navig
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
-      <Header title="Emergency Contacts" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.EmergencyContacts} />
+      <Header title={t('emergency_contacts_title')} onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.EmergencyContacts} showLanguageSwitcher/>
       
       <div className="flex-grow overflow-y-auto p-4 space-y-3">
         <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary px-2 pb-2 animate-fadeIn">
-            Nationwide emergency numbers for India. Tap to call.
+            {t('emergency_contacts_description')}
         </p>
         
         {contacts.map((contact, index) => (
@@ -76,7 +78,7 @@ const EmergencyContactsScreen: React.FC<EmergencyContactsScreenProps> = ({ navig
               className="bg-contacts-primary dark:bg-contacts-primary-dark text-white dark:text-dark-bg font-bold py-2 px-4 rounded-lg flex items-center shadow-md hover:bg-slate-600 dark:hover:bg-slate-500 transition-all duration-300 active:scale-95"
             >
                 <CallIcon />
-                <span className="ml-2">Call</span>
+                <span className="ml-2">{t('call_button')}</span>
             </button>
           </div>
         ))}

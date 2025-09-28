@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Page } from '../types';
 import Header from '../components/Header';
 import { getWeather } from '../services/geminiService';
+import { useTranslation } from '../LanguageContext';
 
 interface HomeScreenProps {
   navigateTo: (page: Page) => void;
@@ -20,6 +21,7 @@ interface WeatherData {
 }
 
 const WeatherAlert: React.FC<{ weather: WeatherData | null; loading: boolean; error: string | null; onNavigate: () => void }> = ({ weather, loading, error, onNavigate }) => {
+    const { t } = useTranslation();
     if (loading) {
         return (
             <div className="bg-light-surface/80 dark:bg-dark-surface/80 backdrop-blur-md rounded-xl p-3 flex items-center animate-pulse">
@@ -40,7 +42,7 @@ const WeatherAlert: React.FC<{ weather: WeatherData | null; loading: boolean; er
                 <WeatherIcon color="weather" />
                 <div className="ml-3">
                     <p className="font-semibold text-sm text-light-text dark:text-dark-text">{weather.cityName}: {Math.round(weather.current.temp)}°C, {weather.current.description}</p>
-                    <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary">View full forecast</p>
+                    <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary">{t('view_full_forecast')}</p>
                 </div>
             </button>
         );
@@ -50,7 +52,7 @@ const WeatherAlert: React.FC<{ weather: WeatherData | null; loading: boolean; er
         <button onClick={onNavigate} className="w-full text-left bg-accent/80 dark:bg-accent-dark/80 backdrop-blur-md rounded-xl p-3 flex items-center transition-all duration-300 shadow-lg animate-pulse-bg-accent">
              <div className="text-yellow-600 dark:text-yellow-400"><AlertTriangleIcon /></div>
             <div className="ml-3 flex-1">
-                <p className="font-bold text-sm text-light-text dark:text-dark-text">Weather Alert: {weather.cityName}</p>
+                <p className="font-bold text-sm text-light-text dark:text-dark-text">{t('weather_alert')}: {weather.cityName}</p>
                 <p className="text-xs text-light-text dark:text-dark-text">{weather.alertDescription}</p>
             </div>
         </button>
@@ -61,31 +63,32 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme,
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherError, setWeatherError] = useState<string | null>(null);
+  const { t, language } = useTranslation();
   
   useEffect(() => {
     if (location) {
       setWeatherLoading(true);
-      getWeather(location.lat, location.lng)
+      getWeather(location.lat, location.lng, language)
         .then(setWeatherData)
-        .catch((err) => setWeatherError(err.message))
+        .catch((err) => setWeatherError(t(err.message)))
         .finally(() => setWeatherLoading(false));
     } else {
         setWeatherLoading(false);
     }
-  }, [location]);
+  }, [location, language, t]);
 
   const features = [
-    { name: 'AI Assistant', page: Page.Chat, icon: <ChatIcon />, color: 'chat' },
-    { name: 'My Location', page: Page.Location, icon: <LocationIcon />, color: 'location' },
-    { name: 'Nearby Services', page: Page.Services, icon: <ServicesIcon />, color: 'location' },
-    { name: 'Weather', page: Page.Weather, icon: <WeatherIcon color="weather" />, color: 'weather' },
-    { name: 'Travel Routes', page: Page.Travel, icon: <TravelIcon />, color: 'travel' },
-    { name: 'Secure Zones', page: Page.SecureZones, icon: <ShieldCheckIcon />, color: 'secure' },
-    { name: 'Emergency Contacts', page: Page.EmergencyContacts, icon: <ContactsIcon />, color: 'contacts'},
-    { name: 'Local Guides', page: Page.LocalGuides, icon: <GuideIcon />, color: 'guide' },
+    { name: t('ai_assistant'), page: Page.Chat, icon: <ChatIcon />, color: 'chat' },
+    { name: t('my_location'), page: Page.Location, icon: <LocationIcon />, color: 'location' },
+    { name: t('nearby_services'), page: Page.Services, icon: <ServicesIcon />, color: 'location' },
+    { name: t('weather'), page: Page.Weather, icon: <WeatherIcon color="weather" />, color: 'weather' },
+    { name: t('travel_routes'), page: Page.Travel, icon: <TravelIcon />, color: 'travel' },
+    { name: t('secure_zones'), page: Page.SecureZones, icon: <ShieldCheckIcon />, color: 'secure' },
+    { name: t('emergency_contacts'), page: Page.EmergencyContacts, icon: <ContactsIcon />, color: 'contacts'},
+    { name: t('local_guides'), page: Page.LocalGuides, icon: <GuideIcon />, color: 'guide' },
   ];
 
-  const sosFeature = { name: 'Emergency SOS', page: Page.SOS, icon: <SOSIcon /> };
+  const sosFeature = { name: t('emergency_sos'), page: Page.SOS, icon: <SOSIcon /> };
   
   const iconColorClasses = (color: string) => {
     switch (color) {
@@ -122,12 +125,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme,
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
-      <Header title="Surakshify" theme={theme} toggleTheme={toggleTheme} showDateTime />
+      <Header title={t('surakshify_title')} theme={theme} toggleTheme={toggleTheme} showDateTime showLanguageSwitcher />
       
       <div className="flex-grow flex flex-col p-4 gap-4 overflow-y-auto no-scrollbar">
         {locationError && (
             <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md animate-fadeIn" role="alert">
-              <p className="font-bold">Location Error</p>
+              <p className="font-bold">{t('error_location')}</p>
               <p className="text-sm">{locationError}</p>
             </div>
         )}
@@ -142,8 +145,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigateTo, theme, toggleTheme,
                 style={shadowStyle('prep')}
             >
                 <div>
-                    <h2 className="font-bold text-lg">Disaster Guides</h2>
-                    <p className="text-sm">Prepare for earthquakes, floods & more</p>
+                    <h2 className="font-bold text-lg">{t('disaster_guides_title')}</h2>
+                    <p className="text-sm">{t('disaster_guides_subtitle')}</p>
                 </div>
                 <div className="flex -space-x-3">
                     <span className="w-8 h-8 rounded-full bg-light-surface dark:bg-dark-surface flex items-center justify-center ring-2 ring-prep-primary/20"><SmallEarthquakeIcon /></span>

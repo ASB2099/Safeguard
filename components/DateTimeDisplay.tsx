@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../LanguageContext';
 
 const DateTimeDisplay: React.FC = () => {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const { locale } = useTranslation();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -17,11 +19,11 @@ const DateTimeDisplay: React.FC = () => {
       month: 'short',
       day: 'numeric',
     };
-    return date.toLocaleDateString('en-US', options);
+    return date.toLocaleDateString(locale, options);
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString(locale, {
       hour12: false,
     });
   };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Page, Service } from '../types';
 import Header from '../components/Header';
 import { getNearbyServices } from '../services/geminiService';
+import { useTranslation } from '../LanguageContext';
 
 interface SOSScreenProps {
   navigateTo: (page: Page) => void;
@@ -15,6 +16,7 @@ interface SOSScreenProps {
 const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, location, locationLoading, locationError }) => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     if (location) {
@@ -22,7 +24,7 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, l
         
         const emergencyServiceKeywords = ['hospital', 'police', 'ambulance', 'medical'];
 
-        getNearbyServices(location.lat, location.lng)
+        getNearbyServices(location.lat, location.lng, language)
             .then(allServices => {
                 const emergencyServices = allServices.filter(service => 
                     emergencyServiceKeywords.some(keyword => 
@@ -36,7 +38,7 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, l
     } else {
         setLoading(false);
     }
-  }, [location]);
+  }, [location, language]);
 
   const mapUrl = location ? (() => {
       const allLocations = [location, ...services.map(s => s.location)];
@@ -55,7 +57,7 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, l
 
   return (
     <div className="flex flex-col h-full bg-danger dark:bg-danger animate-sos-bg-pulse transition-colors duration-500">
-      <Header title="SOS Activated" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.SOS} />
+      <Header title={t('sos_activated_title')} onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.SOS} />
       
       <div className="flex-grow relative map-container">
         {locationLoading ? (
@@ -63,7 +65,7 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, l
                 <div className="relative w-24 h-24 rounded-full bg-danger animate-sos-pulse flex items-center justify-center">
                     <SOSIcon />
                 </div>
-                <p className="mt-4 text-light-text dark:text-dark-text">Broadcasting distress signal...</p>
+                <p className="mt-4 text-light-text dark:text-dark-text">{t('sos_broadcasting_distress')}</p>
             </div>
         ) : location ? (
             <>
@@ -73,14 +75,14 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, l
                 className="absolute w-full h-full border-0"
                 />
                 <div className="absolute top-2 right-2 bg-light-surface/80 dark:bg-dark-surface/80 backdrop-blur-sm p-2 rounded-lg shadow-lg text-xs max-w-[150px]">
-                    <p className="font-bold text-light-text dark:text-dark-text">Your Location (Marker)</p>
-                    <p className="text-light-text-secondary dark:text-dark-text-secondary">Other icons are nearby services visible on the map.</p>
+                    <p className="font-bold text-light-text dark:text-dark-text">{t('sos_map_user_location_info')}</p>
+                    <p className="text-light-text-secondary dark:text-dark-text-secondary">{t('sos_map_services_info')}</p>
                 </div>
             </>
         ) : (
              <div className="w-full h-full flex flex-col items-center justify-center bg-light-surface/60 dark:bg-dark-surface/60 p-4">
                  <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
-                  <p className="font-bold">Location Unavailable</p>
+                  <p className="font-bold">{t('location_unavailable')}</p>
                   <p className="text-sm">{locationError}</p>
                 </div>
             </div>
@@ -89,11 +91,11 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, l
       
       <div className="bg-danger-dark dark:bg-black/50 text-white p-4 transition-colors duration-500">
         <div className="text-center">
-            <h3 className="font-bold text-lg">Help is on the way!</h3>
-            <p className="text-sm text-red-100 dark:text-red-100">Emergency services have been informed.</p>
+            <h3 className="font-bold text-lg">{t('sos_help_on_the_way')}</h3>
+            <p className="text-sm text-red-100 dark:text-red-100">{t('sos_services_informed')}</p>
         </div>
         <div className="mt-4">
-            <h4 className="font-semibold text-sm mb-2 text-center">Notified Services:</h4>
+            <h4 className="font-semibold text-sm mb-2 text-center">{t('sos_notified_services')}</h4>
             <div className="text-xs space-y-1 text-center">
                 {loading || locationLoading ? (
                     <div className="space-y-1">
@@ -106,9 +108,9 @@ const SOSScreen: React.FC<SOSScreenProps> = ({ navigateTo, theme, toggleTheme, l
                         <div key={service.id}><strong>{service.name}</strong> ({service.type})</div>
                     ))
                 ) : locationError ? (
-                    <p>Could not determine nearby services.</p>
+                    <p>{t('sos_could_not_determine_services')}</p>
                 ) : (
-                    <p>No immediate emergency services found nearby.</p>
+                    <p>{t('sos_no_services_found')}</p>
                 )}
             </div>
         </div>

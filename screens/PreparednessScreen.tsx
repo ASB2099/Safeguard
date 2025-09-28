@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Page } from '../types';
 import Header from '../components/Header';
+import { useTranslation } from '../LanguageContext';
 
 interface PreparednessScreenProps {
   navigateTo: (page: Page) => void;
@@ -22,130 +23,133 @@ const ChevronIcon: React.FC<{ isOpen: boolean }> = ({ isOpen }) => (
   </svg>
 );
 
-const disasterData = [
-  {
-    id: 'earthquake',
-    name: 'Earthquake',
-    icon: <EarthquakeIcon />,
-    during: [
-      'Drop, Cover, and Hold On.',
-      'Stay indoors until shaking stops.',
-      'Stay away from windows, and objects that could fall.',
-      'If outdoors, find a clear spot away from buildings and trees.',
-    ],
-    precautions: [
-      'Secure heavy furniture to walls.',
-      'Create an emergency kit with water, food, and first aid.',
-      'Identify safe spots in each room.',
-      'Practice "Drop, Cover, and Hold On" with family.',
-    ],
-  },
-  {
-    id: 'flood',
-    name: 'Flood',
-    icon: <FloodIcon />,
-    during: [
-      'Move to higher ground immediately.',
-      'Do not walk, swim, or drive through floodwaters.',
-      'Listen to emergency broadcasts for updates.',
-      'If trapped, signal for help from a high point.',
-    ],
-    precautions: [
-      'Know your area\'s flood risk.',
-      'Keep important documents in a waterproof container.',
-      'Assemble a disaster kit.',
-      'Have an evacuation plan ready.',
-    ],
-  },
-  {
-    id: 'fire',
-    name: 'Fire',
-    icon: <FireIcon />,
-    during: [
-        'Evacuate immediately; do not stop for belongings.',
-        'Stay low to the ground to avoid smoke.',
-        'Feel doors for heat before opening.',
-        'Once out, stay out and call for help.',
-    ],
-    precautions: [
-        'Install smoke alarms and test them regularly.',
-        'Have fire extinguishers and know how to use them.',
-        'Plan and practice a fire escape route.',
-        'Keep flammable materials away from heat sources.',
-    ],
-  },
-   {
-    id: 'storm',
-    name: 'Severe Storm / Cyclone',
-    icon: <StormIcon />,
-    during: [
-        'Stay indoors and away from windows.',
-        'Take shelter in a small, interior room or basement.',
-        'Listen to weather radios for updates and instructions.',
-        'Unplug electronics to prevent power surge damage.',
-    ],
-    precautions: [
-        'Secure outdoor objects or bring them inside.',
-        'Board up windows if necessary.',
-        'Have an emergency kit with non-perishable food and water.',
-        'Trim trees and branches that could fall on your home.',
-    ],
-  },
-  {
-    id: 'tsunami',
-    name: 'Tsunami',
-    icon: <TsunamiIcon />,
-    during: [
-      'If you feel an earthquake near a coast, drop, cover, hold on, then evacuate to high ground.',
-      'Move inland as far as possible.',
-      'Follow official evacuation orders immediately.',
-      'Do not return to the coast until authorities say it is safe.',
-    ],
-    precautions: [
-      'Know your community\'s tsunami warning system and evacuation routes.',
-      'Practice your evacuation route.',
-      'If you are new to an area, ask about the local tsunami risk.',
-      'Prepare a "go-bag" with essentials.',
-    ],
-  },
-  {
-    id: 'landslide',
-    name: 'Landslide',
-    icon: <LandslideIcon />,
-    during: [
-      'Evacuate immediately if it is safe to do so.',
-      'Listen for unusual sounds that might indicate moving debris.',
-      'Move away from the path of a landslide or debris flow.',
-      'If escape is not possible, curl into a tight ball and protect your head.',
-    ],
-    precautions: [
-      'Learn about the landslide risk in your area.',
-      'Watch for changes in landscape and water drainage.',
-      'Have a geotechnical expert assess your property if you are in a high-risk zone.',
-      'Plant ground cover on slopes and build retaining walls.',
-    ],
-  },
-  {
-    id: 'volcano',
-    name: 'Volcanic Eruption',
-    icon: <VolcanoIcon />,
-    during: [
-      'Follow evacuation orders from authorities immediately.',
-      'Avoid low-lying areas, and areas downwind of the volcano.',
-      'Protect yourself from falling ash by wearing long sleeves, goggles, and a dust mask.',
-      'Stay indoors and close all windows and doors.',
-    ],
-    precautions: [
-      'Know your community\'s warning signals and evacuation plans.',
-      'Prepare an emergency kit with goggles and dust masks for everyone.',
-      'Understand the risk of mudflows (lahars) which can be very dangerous.',
-      'Have a plan for your pets and livestock.',
-    ],
-  },
-];
 
 const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, theme, toggleTheme }) => {
   const [openId, setOpenId] = useState<string | null>(null);
+  const { t } = useTranslation();
+  
+  const disasterData = [
+    {
+      id: 'earthquake',
+      name: t('earthquake'),
+      icon: <EarthquakeIcon />,
+      during: [
+        t('earthquake_during_1'),
+        t('earthquake_during_2'),
+        t('earthquake_during_3'),
+        t('earthquake_during_4'),
+      ],
+      precautions: [
+        t('earthquake_before_1'),
+        t('earthquake_before_2'),
+        t('earthquake_before_3'),
+        t('earthquake_before_4'),
+      ],
+    },
+    {
+      id: 'flood',
+      name: t('flood'),
+      icon: <FloodIcon />,
+      during: [
+        t('flood_during_1'),
+        t('flood_during_2'),
+        t('flood_during_3'),
+        t('flood_during_4'),
+      ],
+      precautions: [
+        t('flood_before_1'),
+        t('flood_before_2'),
+        t('flood_before_3'),
+        t('flood_before_4'),
+      ],
+    },
+    {
+      id: 'fire',
+      name: t('fire'),
+      icon: <FireIcon />,
+      during: [
+          t('fire_during_1'),
+          t('fire_during_2'),
+          t('fire_during_3'),
+          t('fire_during_4'),
+      ],
+      precautions: [
+          t('fire_before_1'),
+          t('fire_before_2'),
+          t('fire_before_3'),
+          t('fire_before_4'),
+      ],
+    },
+     {
+      id: 'storm',
+      name: t('storm'),
+      icon: <StormIcon />,
+      during: [
+          t('storm_during_1'),
+          t('storm_during_2'),
+          t('storm_during_3'),
+          t('storm_during_4'),
+      ],
+      precautions: [
+          t('storm_before_1'),
+          t('storm_before_2'),
+          t('storm_before_3'),
+          t('storm_before_4'),
+      ],
+    },
+    {
+      id: 'tsunami',
+      name: t('tsunami'),
+      icon: <TsunamiIcon />,
+      during: [
+        t('tsunami_during_1'),
+        t('tsunami_during_2'),
+        t('tsunami_during_3'),
+        t('tsunami_during_4'),
+      ],
+      precautions: [
+        t('tsunami_before_1'),
+        t('tsunami_before_2'),
+        t('tsunami_before_3'),
+        t('tsunami_before_4'),
+      ],
+    },
+    {
+      id: 'landslide',
+      name: t('landslide'),
+      icon: <LandslideIcon />,
+      during: [
+        t('landslide_during_1'),
+        t('landslide_during_2'),
+        t('landslide_during_3'),
+        t('landslide_during_4'),
+      ],
+      precautions: [
+        t('landslide_before_1'),
+        t('landslide_before_2'),
+        t('landslide_before_3'),
+        t('landslide_before_4'),
+      ],
+    },
+    {
+      id: 'volcano',
+      name: t('volcano'),
+      icon: <VolcanoIcon />,
+      during: [
+        t('volcano_during_1'),
+        t('volcano_during_2'),
+        t('volcano_during_3'),
+        t('volcano_during_4'),
+      ],
+      precautions: [
+        t('volcano_before_1'),
+        t('volcano_before_2'),
+        t('volcano_before_3'),
+        t('volcano_before_4'),
+      ],
+    },
+  ];
+
 
   const toggleAccordion = (id: string) => {
     setOpenId(openId === id ? null : id);
@@ -153,11 +157,11 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, the
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
-      <Header title="Disaster Preparedness" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.Preparedness} />
+      <Header title={t('disaster_preparedness_title')} onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.Preparedness} showLanguageSwitcher/>
       
       <div className="flex-grow overflow-y-auto p-4 space-y-3">
         <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary px-2 pb-2 animate-fadeIn">
-            Stay safe by learning what to do before and during common natural disasters.
+            {t('preparedness_description')}
         </p>
         
         {disasterData.map((disaster, index) => (
@@ -184,13 +188,13 @@ const PreparednessScreen: React.FC<PreparednessScreenProps> = ({ navigateTo, the
             >
               <div className="p-4 pt-0 text-light-text dark:text-dark-text">
                 <div className="border-t border-light-border dark:border-dark-border pt-4">
-                  <h4 className="font-semibold text-md text-prep-primary dark:text-prep-primary-dark mb-2">What to do DURING:</h4>
+                  <h4 className="font-semibold text-md text-prep-primary dark:text-prep-primary-dark mb-2">{t('during_title')}</h4>
                   <ul className="list-disc list-inside space-y-1 text-sm text-light-text-secondary dark:text-dark-text-secondary">
                     {disaster.during.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>
                 </div>
                 <div className="mt-4">
-                  <h4 className="font-semibold text-md text-prep-primary dark:text-prep-primary-dark mb-2">Precautions to take BEFORE:</h4>
+                  <h4 className="font-semibold text-md text-prep-primary dark:text-prep-primary-dark mb-2">{t('before_title')}</h4>
                   <ul className="list-disc list-inside space-y-1 text-sm text-light-text-secondary dark:text-dark-text-secondary">
                     {disaster.precautions.map((tip, index) => <li key={index}>{tip}</li>)}
                   </ul>

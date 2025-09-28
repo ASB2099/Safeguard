@@ -18,6 +18,7 @@ import EmergencyContactsScreen from './screens/EmergencyContactsScreen';
 import LocalGuidesScreen from './screens/LocalGuidesScreen';
 import CustomCursor from './components/CustomCursor';
 import RippleEffect from './components/RippleEffect';
+import { LanguageProvider, useTranslation } from './LanguageContext';
 
 const getPageTheme = (page: Page) => {
     switch (page) {
@@ -87,7 +88,7 @@ const getPageTheme = (page: Page) => {
     }
 };
 
-function App() {
+const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Splash);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedTravelService, setSelectedTravelService] = useState<TravelService | null>(null);
@@ -97,6 +98,7 @@ function App() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [locationLoading, setLocationLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Only enable cursor following effect on devices with a fine pointer (mouse/trackpad)
@@ -132,34 +134,34 @@ function App() {
           setLocationLoading(false);
         },
         (error: GeolocationPositionError) => {
-          let errorMessage: string;
+          let errorMessageKey: string;
           switch(error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage = "Location access was denied. Please enable location permissions in your browser or device settings to use location-based features.";
+              errorMessageKey = "error_location_denied";
               break;
             case error.POSITION_UNAVAILABLE:
-              errorMessage = "Location information is currently unavailable. Please check your connection or try again later.";
+              errorMessageKey = "error_location_unavailable";
               break;
             case error.TIMEOUT:
-              errorMessage = "The request to get your location timed out. Please try again.";
+              errorMessageKey = "error_location_timeout";
               break;
             default:
-              errorMessage = "An unknown error occurred while trying to get your location.";
+              errorMessageKey = "error_location_unknown";
               break;
           }
-          setLocationError(errorMessage);
+          setLocationError(t(errorMessageKey as any));
           setLocation(null); 
           setLocationLoading(false);
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
-      setLocationError("Geolocation is not supported by this browser.");
+      setLocationError(t("error_geolocation_unsupported"));
       setLocation(null);
       setLocationLoading(false);
     }
 
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -275,6 +277,14 @@ function App() {
       </div>
     </div>
   );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  )
 }
 
 export default App;

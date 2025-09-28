@@ -1,6 +1,7 @@
 import React from 'react';
 import { Page, Service } from '../types';
 import Header from '../components/Header';
+import { useTranslation } from '../LanguageContext';
 
 interface ServiceMapScreenProps {
   navigateTo: (page: Page) => void;
@@ -11,15 +12,16 @@ interface ServiceMapScreenProps {
 }
 
 const ServiceMapScreen: React.FC<ServiceMapScreenProps> = ({ navigateTo, service, theme, toggleTheme, location }) => {
-  
+  const { t } = useTranslation();
+
   if (!location) {
     return (
         <div className="flex flex-col h-full bg-gradient-page">
-            <Header title="Error" onBack={() => navigateTo(Page.Services)} theme={theme} toggleTheme={toggleTheme} page={Page.ServiceMap} />
+            <Header title={t('error_title')} onBack={() => navigateTo(Page.Services)} theme={theme} toggleTheme={toggleTheme} page={Page.ServiceMap} />
             <div className="flex-grow flex items-center justify-center p-4">
                 <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
-                  <p className="font-bold">Location Unavailable</p>
-                  <p className="text-sm">Your location is required to display the map. Please enable location services and return to the previous screen.</p>
+                  <p className="font-bold">{t('location_unavailable')}</p>
+                  <p className="text-sm">{t('location_unavailable_message')}</p>
                 </div>
             </div>
         </div>
@@ -48,7 +50,7 @@ const ServiceMapScreen: React.FC<ServiceMapScreenProps> = ({ navigateTo, service
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
-      <Header title={service.name} onBack={() => navigateTo(Page.Services)} theme={theme} toggleTheme={toggleTheme} page={Page.ServiceMap} />
+      <Header title={service.name} onBack={() => navigateTo(Page.Services)} theme={theme} toggleTheme={toggleTheme} page={Page.ServiceMap} showLanguageSwitcher/>
       
       <div className="flex-grow relative map-container">
         <iframe
@@ -70,7 +72,7 @@ const ServiceMapScreen: React.FC<ServiceMapScreenProps> = ({ navigateTo, service
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
           </svg>
-          Get Directions
+          {t('get_directions_button')}
         </button>
       </div>
     </div>

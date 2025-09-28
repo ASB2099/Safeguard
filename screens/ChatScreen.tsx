@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Page, Message } from '../types';
 import Header from '../components/Header';
 import { getBotResponse } from '../services/geminiService';
+import { useTranslation } from '../LanguageContext';
 
 interface ChatScreenProps {
   navigateTo: (page: Page) => void;
@@ -10,19 +11,48 @@ interface ChatScreenProps {
 }
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: Date.now(),
-      text: "Hello! I'm Surakshify, your personal travel assistant. How can I help you today?",
-      sender: 'bot',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    }
-  ]);
+  const { t, language } = useTranslation();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  const getSystemInstruction = useCallback(() => {
+    const languageMap: { [key: string]: string } = {
+        en: 'English',
+        hi: 'Hindi',
+    };
+    const langName = languageMap[language] || 'English';
+
+    return `You are 'Surakshify', a friendly and helpful AI assistant for travelers. 
+    Your goal is to provide concise, useful, and safe information. 
+    Respond exclusively in ${langName}.
+    Keep your answers brief and to the point.
+    If asked about sensitive topics like personal safety, give cautious and general advice, e.g., 'Always be aware of your surroundings and keep your valuables secure.'
+    If asked for medical advice, tell the user to contact emergency services or a professional doctor immediately.
+    Do not engage in long, off-topic conversations.
+    Start your very first message with a warm welcome like 'Hello! I'm Surakshify, your personal travel assistant. How can I help you today?' in ${langName}.`;
+  }, [language]);
+
+
+  useEffect(() => {
+    // Set initial message from bot when component mounts
+    const sendInitialMessage = async () => {
+        setIsLoading(true);
+        try {
+            const botResponse = await getBotResponse("Initial Greeting", getSystemInstruction());
+            addMessage(botResponse, 'bot');
+        } catch (error: any) {
+            addMessage(t(error.message as any), 'bot');
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    sendInitialMessage();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -43,17 +73,17 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
   const handleSend = async () => {
     if (input.trim() === '' || isLoading) return;
     const userInput = input;
-    const isFirstMessage = messages.length === 1;
     
     setInput('');
     addMessage(userInput, 'user');
     setIsLoading(true);
     
     try {
-      const botResponse = await getBotResponse(userInput, isFirstMessage);
+      const botResponse = await getBotResponse(userInput, getSystemInstruction());
       addMessage(botResponse, 'bot');
+    // FIX: Corrected a malformed try-catch block that was causing multiple parsing errors.
     } catch (error: any) {
-      addMessage(error.message, 'bot');
+      addMessage(t(error.message as any), 'bot');
     } finally {
       setIsLoading(false);
     }
@@ -83,10 +113,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
-      <Header title="AI Assistant" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.Chat} />
+      <Header title={t('ai_assistant_title')} onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.Chat} showLanguageSwitcher/>
       
       <div className="bg-chat-primary/10 dark:bg-chat-primary-dark/10 backdrop-blur-sm text-center p-2 transition-colors duration-500">
-        <p className="text-xs text-chat-primary dark:text-chat-primary-dark">This is an AI assistant. For emergencies, please use the SOS feature.</p>
+        <p className="text-xs text-chat-primary dark:text-chat-primary-dark">{t('chat_disclaimer')}</p>
       </div>
 
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
@@ -126,7 +156,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Write a message..."
+            placeholder={t('chat_input_placeholder')}
             className="flex-grow bg-transparent focus:outline-none mx-3 text-sm text-light-text dark:text-dark-text placeholder-light-text-secondary dark:placeholder-dark-text-secondary"
             disabled={isLoading}
           />
@@ -139,7 +169,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
       {isCameraOpen && (
         <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-50 animate-fadeIn">
           <video ref={videoRef} autoPlay className="w-full h-auto max-h-[80%] rounded-lg" />
-          <button onClick={stopCamera} className="mt-4 bg-red-600 text-white px-6 py-2 rounded-full font-bold">Close Camera</button>
+          <button onClick={stopCamera} className="mt-4 bg-red-600 text-white px-6 py-2 rounded-full font-bold">{t('close_camera')}</button>
         </div>
       )}
 

@@ -46,7 +46,7 @@ const parseJsonResponse = (responseText: string) => {
     } catch (e) {
         console.error("Failed to parse JSON response:", responseText);
         // Throw a specific error that can be handled by processError
-        throw new Error("Received an invalid format from the AI service.");
+        throw new Error("error_invalid_format");
     }
 }
 
@@ -57,18 +57,18 @@ const processError = (error: any): never => {
     const errorString = String(error.message || error);
     
     if (errorString.includes('429') || errorString.toLowerCase().includes('quota')) {
-        throw new Error("You've made too many requests. Please wait a few moments and try again.");
+        throw new Error("error_too_many_requests");
     }
     
     if (errorString.toLowerCase().includes('api key')) {
-        throw new Error("The application is not configured correctly. An API key is required or invalid.");
+        throw new Error("error_api_key_invalid");
     }
     
-    if (errorString.includes("invalid format from the AI service")) {
-        throw new Error("The AI returned a response in an unexpected format. Please try again.");
+    if (errorString.includes("error_invalid_format")) {
+        throw new Error("error_invalid_format");
     }
     
-    throw new Error("Sorry, I'm having trouble connecting to the AI service. Please check your internet connection and try again later.");
+    throw new Error("error_ai_connection");
 };
 
 
@@ -95,41 +95,37 @@ const withRetry = async <T>(apiCall: () => Promise<T>, maxRetries = 3, initialDe
 
 let ai: GoogleGenAI | null = null;
 
-/**
- * Lazily initializes and returns the GoogleGenAI instance.
- * This prevents the app from crashing on startup if the API key
- * isn't immediately available.
- */
 const getAi = () => {
   if (!ai) {
-    // The API key is provided here for demonstration purposes.
-    // In a production environment, it is strongly recommended to use a secure method 
-    // for managing API keys, such as environment variables.
-    const apiKey = "AIzaSyC5k7MSYfjKfvQBBq69d7SzBBb-51t5cWI";
-    ai = new GoogleGenAI({ apiKey: apiKey });
+    if (!process.env.API_KEY) {
+      throw new Error("API_KEY environment variable not set");
+    }
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   }
   return ai;
 };
 
-const travelAssistantSystemInstruction = `You are 'Surakshify', a friendly and helpful AI assistant for travelers. 
-Your goal is to provide concise, useful, and safe information. 
-Keep your answers brief and to the point.
-If asked about sensitive topics like personal safety, give cautious and general advice, e.g., 'Always be aware of your surroundings and keep your valuables secure.'
-If asked for medical advice, tell the user to contact emergency services or a professional doctor immediately.
-Do not engage in long, off-topic conversations.
-Start your very first message with a warm welcome like 'Hello! I'm Surakshify, your personal travel assistant. How can I help you today?'`;
-
+const languageMap: { [key: string]: string } = {
+  en: 'English',
+  hi: 'Hindi',
+  mr: 'Marathi',
+  ta: 'Tamil',
+  te: 'Telugu',
+  ml: 'Malayalam',
+  ur: 'Urdu',
+  sa: 'Sanskrit',
+};
 
 export const getBotResponse = async (
   prompt: string,
-  isFirstMessage: boolean
+  systemInstruction: string
 ): Promise<string> => {
   try {
     const apiCall = () => getAi().models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
         config: {
-            systemInstruction: isFirstMessage ? travelAssistantSystemInstruction : undefined,
+            systemInstruction: systemInstruction,
         },
     });
     const response: GenerateContentResponse = await withRetry(apiCall);
@@ -140,15 +136,16 @@ export const getBotResponse = async (
 };
 
 
-export const getWeather = async (lat: number, lng: number) => {
-  const cacheKey = `weather-${lat.toFixed(4)}-${lng.toFixed(4)}`;
+export const getWeather = async (lat: number, lng: number, language: string) => {
+  const languageName = languageMap[language] || 'English';
+  const cacheKey = `weather-${lat.toFixed(4)}-${lng.toFixed(4)}-${language}`;
   const cachedData = getFromCache(cacheKey);
   if (cachedData) return cachedData;
   
   try {
     const apiCall = () => getAi().models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Provide the current weather and a 5-item hourly forecast for latitude ${lat} and longitude ${lng}. Identify the city name. Also, provide a brief 'alertDescription' (max 15 words) and a boolean 'hasAlert' if there are any severe weather warnings like heavy rain, storms, or floods. If not, make 'alertDescription' an empty string and 'hasAlert' false.`,
+      contents: `Provide the current weather and a 5-item hourly forecast for latitude ${lat} and longitude ${lng}. Identify the city name. Also, provide a brief 'alertDescription' (max 15 words) and a boolean 'hasAlert' if there are any severe weather warnings like heavy rain, storms, or floods. If not, make 'alertDescription' an empty string and 'hasAlert' false. Provide all textual descriptions and the city name in ${languageName}.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -189,15 +186,16 @@ export const getWeather = async (lat: number, lng: number) => {
   }
 };
 
-export const getNearbyServices = async (lat: number, lng: number): Promise<Service[]> => {
-    const cacheKey = `services-${lat.toFixed(4)}-${lng.toFixed(4)}`;
+export const getNearbyServices = async (lat: number, lng: number, language: string): Promise<Service[]> => {
+    const languageName = languageMap[language] || 'English';
+    const cacheKey = `services-${lat.toFixed(4)}-${lng.toFixed(4)}-${language}`;
     const cachedData = getFromCache(cacheKey);
     if (cachedData) return cachedData;
     
     try {
         const apiCall = () => getAi().models.generateContent({
             model: "gemini-2.5-flash",
-            contents: `List up to 8 nearby essential services (like 'Hospital', 'Police', 'Pharmacy', 'ATM', 'Restaurant', 'Hotel') within a 20 kilometer radius of latitude ${lat}, longitude ${lng}. Ensure the 'type' field is one of the requested categories.`,
+            contents: `List up to 8 nearby essential services (like 'Hospital', 'Police', 'Pharmacy', 'ATM', 'Restaurant', 'Hotel') within a 20 kilometer radius of latitude ${lat}, longitude ${lng}. Ensure the 'type' field is one of the requested categories. Provide all service names and types in ${languageName}.`,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
@@ -235,15 +233,16 @@ export const getNearbyServices = async (lat: number, lng: number): Promise<Servi
 };
 
 
-export const getTravelRoutes = async (lat: number, lng: number): Promise<TravelService[]> => {
-    const cacheKey = `routes-${lat.toFixed(4)}-${lng.toFixed(4)}`;
+export const getTravelRoutes = async (lat: number, lng: number, language: string): Promise<TravelService[]> => {
+    const languageName = languageMap[language] || 'English';
+    const cacheKey = `routes-${lat.toFixed(4)}-${lng.toFixed(4)}-${language}`;
     const cachedData = getFromCache(cacheKey);
     if (cachedData) return cachedData;
     
     try {
         const apiCall = () => getAi().models.generateContent({
             model: "gemini-2.5-flash",
-            contents: `List 2 major travel hubs (one 'Train Station' and one 'Bus Station') near latitude ${lat}, longitude ${lng}. For each, provide a plausible travel path as an array of coordinates from the user's location.`,
+            contents: `List 2 major travel hubs (one 'Train Station' and one 'Bus Station') near latitude ${lat}, longitude ${lng}. For each, provide a plausible travel path as an array of coordinates from the user's location. Provide all names and types in ${languageName}.`,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
@@ -290,15 +289,16 @@ export const getTravelRoutes = async (lat: number, lng: number): Promise<TravelS
     }
 };
 
-export const getSecureZones = async (lat: number, lng: number): Promise<SecureZone[]> => {
-    const cacheKey = `secure-zones-${lat.toFixed(4)}-${lng.toFixed(4)}`;
+export const getSecureZones = async (lat: number, lng: number, language: string): Promise<SecureZone[]> => {
+    const languageName = languageMap[language] || 'English';
+    const cacheKey = `secure-zones-${lat.toFixed(4)}-${lng.toFixed(4)}-${language}`;
     const cachedData = getFromCache(cacheKey);
     if (cachedData) return cachedData;
     
     try {
         const apiCall = () => getAi().models.generateContent({
             model: "gemini-2.5-flash",
-            contents: `List up to 5 nearby secure zones within a 20km radius of latitude ${lat}, longitude ${lng}. These should be locations protected from natural disasters, like 'Community Shelter', 'Reinforced Building', or 'Emergency Bunker'. Provide a brief 'description' for each.`,
+            contents: `List up to 5 nearby secure zones within a 20km radius of latitude ${lat}, longitude ${lng}. These should be locations protected from natural disasters, like 'Community Shelter', 'Reinforced Building', or 'Emergency Bunker'. Provide a brief 'description' for each. Provide all names, types, and descriptions in ${languageName}.`,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
@@ -337,15 +337,16 @@ export const getSecureZones = async (lat: number, lng: number): Promise<SecureZo
 };
 
 
-export const getLocalGuides = async (lat: number, lng: number): Promise<LocalGuide[]> => {
-    const cacheKey = `local-guides-${lat.toFixed(4)}-${lng.toFixed(4)}`;
+export const getLocalGuides = async (lat: number, lng: number, language: string): Promise<LocalGuide[]> => {
+    const languageName = languageMap[language] || 'English';
+    const cacheKey = `local-guides-${lat.toFixed(4)}-${lng.toFixed(4)}-${language}`;
     const cachedData = getFromCache(cacheKey);
     if (cachedData) return cachedData;
     
     try {
         const apiCall = () => getAi().models.generateContent({
             model: "gemini-2.5-flash",
-            contents: `List up to 5 local guides near latitude ${lat}, longitude ${lng}. Include their name, a brief specialty (e.g., 'Trekking', 'Historical Tours'), a valid Indian contact number, and their approximate location.`,
+            contents: `List up to 5 local guides near latitude ${lat}, longitude ${lng}. Include their name, a brief specialty (e.g., 'Trekking', 'Historical Tours'), a valid Indian contact number, and their approximate location. Provide all names and specialties in ${languageName}.`,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {

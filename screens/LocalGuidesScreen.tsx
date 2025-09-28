@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Page, LocalGuide } from '../types';
 import Header from '../components/Header';
 import { getLocalGuides } from '../services/geminiService';
+import { useTranslation } from '../LanguageContext';
 
 interface LocalGuidesScreenProps {
   navigateTo: (page: Page) => void;
@@ -16,18 +17,19 @@ const LocalGuidesScreen: React.FC<LocalGuidesScreenProps> = ({ navigateTo, theme
   const [guides, setGuides] = useState<LocalGuide[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     if (location) {
       setLoading(true);
-      getLocalGuides(location.lat, location.lng)
+      getLocalGuides(location.lat, location.lng, language)
         .then(setGuides)
-        .catch((err) => setError(err.message || "Could not fetch local guides. Please try again later."))
+        .catch((err) => setError(t(err.message as any) || "Could not fetch local guides. Please try again later."))
         .finally(() => setLoading(false));
     } else {
         setLoading(false);
     }
-  }, [location]);
+  }, [location, language, t]);
   
   const handleContact = (number: string) => {
     window.location.href = `tel:${number}`;
@@ -49,7 +51,7 @@ const LocalGuidesScreen: React.FC<LocalGuidesScreenProps> = ({ navigateTo, theme
     if (locationError) {
         return (
             <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
-              <p className="font-bold">Location Error</p>
+              <p className="font-bold">{t('error_location')}</p>
               <p className="text-sm">{locationError}</p>
             </div>
         )
@@ -80,7 +82,7 @@ const LocalGuidesScreen: React.FC<LocalGuidesScreenProps> = ({ navigateTo, theme
               className="bg-guide-primary dark:bg-guide-primary-dark text-white dark:text-dark-bg font-bold py-2 px-4 rounded-lg flex items-center shadow-md hover:bg-amber-700 dark:hover:bg-amber-600 transition-all duration-300 active:scale-95"
             >
                 <CallIcon />
-                <span className="ml-2 hidden sm:inline">Contact</span>
+                <span className="ml-2 hidden sm:inline">{t('contact_button')}</span>
             </button>
       </div>
     ));
@@ -88,11 +90,11 @@ const LocalGuidesScreen: React.FC<LocalGuidesScreenProps> = ({ navigateTo, theme
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
-      <Header title="Local Guides" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.LocalGuides} />
+      <Header title={t('local_guides_title')} onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.LocalGuides} showLanguageSwitcher/>
       
       <div className="flex-grow overflow-y-auto p-4 space-y-3">
         <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary px-2 pb-2 animate-fadeIn">
-            Find local experts for tours and assistance.
+            {t('local_guides_description')}
         </p>
         {renderContent()}
       </div>

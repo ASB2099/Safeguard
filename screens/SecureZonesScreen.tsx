@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Page, SecureZone } from '../types';
 import Header from '../components/Header';
 import { getSecureZones } from '../services/geminiService';
+import { useTranslation } from '../LanguageContext';
 
 interface SecureZonesScreenProps {
   navigateTo: (page: Page) => void;
@@ -17,18 +18,19 @@ const SecureZonesScreen: React.FC<SecureZonesScreenProps> = ({ navigateTo, viewS
   const [zones, setZones] = useState<SecureZone[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     if (location) {
       setLoading(true);
-      getSecureZones(location.lat, location.lng)
+      getSecureZones(location.lat, location.lng, language)
         .then(setZones)
-        .catch((err) => setError(err.message || "Could not fetch secure zones. Please try again later."))
+        .catch((err) => setError(t(err.message as any) || "Could not fetch secure zones. Please try again later."))
         .finally(() => setLoading(false));
     } else {
         setLoading(false);
     }
-  }, [location]);
+  }, [location, language, t]);
 
   const renderContent = () => {
     if (loading || locationLoading) {
@@ -46,7 +48,7 @@ const SecureZonesScreen: React.FC<SecureZonesScreenProps> = ({ navigateTo, viewS
     if (locationError) {
         return (
             <div className="bg-red-100/80 dark:bg-red-900/50 backdrop-blur-md border-l-4 border-danger dark:border-danger-dark text-danger dark:text-danger-dark p-4 rounded-md" role="alert">
-              <p className="font-bold">Location Error</p>
+              <p className="font-bold">{t('error_location')}</p>
               <p className="text-sm">{locationError}</p>
             </div>
         )
@@ -80,10 +82,10 @@ const SecureZonesScreen: React.FC<SecureZonesScreenProps> = ({ navigateTo, viewS
 
   return (
     <div className="flex flex-col h-full bg-gradient-page">
-      <Header title="Secure Zones" onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.SecureZones} />
+      <Header title={t('secure_zones_title')} onBack={() => navigateTo(Page.Home)} theme={theme} toggleTheme={toggleTheme} page={Page.SecureZones} showLanguageSwitcher/>
       
       <div className="flex-grow overflow-y-auto p-4 space-y-3">
-        <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary px-2 pb-2 animate-fadeIn">Nearby locations designated as safe zones during natural disasters.</p>
+        <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary px-2 pb-2 animate-fadeIn">{t('secure_zones_description')}</p>
         {renderContent()}
       </div>
     </div>

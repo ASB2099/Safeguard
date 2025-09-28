@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DateTimeDisplay from './DateTimeDisplay';
 import { Page } from '../types';
+import { useTranslation } from '../LanguageContext';
+import { Language } from '../translations';
 
 interface HeaderProps {
   title: string;
@@ -10,6 +12,7 @@ interface HeaderProps {
   toggleTheme?: (event: React.MouseEvent) => void;
   showDateTime?: boolean;
   page?: Page;
+  showLanguageSwitcher?: boolean;
 }
 
 const getPageColorClasses = (page?: Page) => {
@@ -41,7 +44,61 @@ const getPageColorClasses = (page?: Page) => {
     }
 }
 
-const Header: React.FC<HeaderProps> = ({ title, onBack, children, theme, toggleTheme, showDateTime = false, page }) => {
+const LanguageSwitcher: React.FC = () => {
+    const { language, changeLanguage } = useTranslation();
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const languages: { code: Language, name: string }[] = [
+        { code: 'en', name: 'English' },
+        { code: 'hi', name: 'हिन्दी' },
+        { code: 'mr', name: 'मराठी' },
+        { code: 'ta', name: 'தமிழ்' },
+        { code: 'te', name: 'తెలుగు' },
+        { code: 'ml', name: 'മലയാളം' },
+        { code: 'ur', name: 'اردو' },
+        { code: 'sa', name: 'संस्कृतम्' },
+    ];
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleLanguageChange = (lang: Language) => {
+        changeLanguage(lang);
+        setIsOpen(false);
+    }
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-full text-primary dark:text-primary-dark hover:bg-primary/10 dark:hover:bg-primary-dark/10 transition-colors duration-300 flex items-center">
+                <GlobeIcon />
+                <span className="ml-1 text-xs font-semibold">{language.toUpperCase()}</span>
+            </button>
+            {isOpen && (
+                <div className="absolute right-0 mt-2 w-32 bg-light-surface dark:bg-dark-surface rounded-md shadow-lg border border-light-border dark:border-dark-border z-20 animate-fadeIn">
+                    {languages.map(lang => (
+                        <button 
+                            key={lang.code}
+                            onClick={() => handleLanguageChange(lang.code)}
+                            className={`block w-full text-left px-4 py-2 text-sm ${language === lang.code ? 'font-bold text-primary dark:text-primary-dark' : 'text-light-text dark:text-dark-text'} hover:bg-gray-100 dark:hover:bg-dark-surface/80`}
+                        >
+                            {lang.name}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
+const Header: React.FC<HeaderProps> = ({ title, onBack, children, theme, toggleTheme, showDateTime = false, page, showLanguageSwitcher = false }) => {
   const colorClasses = getPageColorClasses(page);
   
   return (
@@ -56,9 +113,10 @@ const Header: React.FC<HeaderProps> = ({ title, onBack, children, theme, toggleT
         )}
         <h1 className="text-2xl font-bold text-light-text dark:text-dark-text">{title}</h1>
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center space-x-1">
         {children}
         {showDateTime && <DateTimeDisplay />}
+        {showLanguageSwitcher && <LanguageSwitcher />}
         {toggleTheme && theme && (
             <button onClick={(e) => toggleTheme(e)} className="p-2 rounded-full text-primary dark:text-primary-dark hover:bg-primary/10 dark:hover:bg-primary-dark/10 transition-colors duration-300">
                 {theme === 'light' ? <MoonIcon /> : <SunIcon />}
@@ -71,6 +129,7 @@ const Header: React.FC<HeaderProps> = ({ title, onBack, children, theme, toggleT
 
 const MoonIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>;
 const SunIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
+const GlobeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h8a2 2 0 002-2v-1a2 2 0 012-2h1.945M12 21a9 9 0 100-18 9 9 0 000 18z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12a7 7 0 0014 0" /></svg>;
 
 
 export default Header;
