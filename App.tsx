@@ -119,10 +119,6 @@ const AppContent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-    }
-
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
