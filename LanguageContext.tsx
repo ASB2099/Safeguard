@@ -28,6 +28,8 @@ const getLocaleForLanguage = (lang: Language): string => {
         case 'ml': return 'ml-IN';
         case 'ur': return 'ur-IN';
         case 'sa': return 'sa-IN';
+        case 'as': return 'as-IN';
+        case 'bn': return 'bn-IN';
         default: return 'en-US';
     }
 }

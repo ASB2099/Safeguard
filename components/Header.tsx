@@ -58,6 +58,8 @@ const LanguageSwitcher: React.FC = () => {
         { code: 'ml', name: 'മലയാളം' },
         { code: 'ur', name: 'اردو' },
         { code: 'sa', name: 'संस्कृतम्' },
+        { code: 'as', name: 'অসমীয়া' },
+        { code: 'bn', name: 'বাংলা' },
     ];
 
     useEffect(() => {
@@ -82,7 +84,7 @@ const LanguageSwitcher: React.FC = () => {
                 <span className="ml-1 text-xs font-semibold">{language.toUpperCase()}</span>
             </button>
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-32 bg-light-surface dark:bg-dark-surface rounded-md shadow-lg border border-light-border dark:border-dark-border z-20 animate-fadeIn">
+                <div className="absolute right-0 mt-2 w-32 bg-light-surface dark:bg-dark-surface rounded-md shadow-lg border border-light-border dark:border-dark-border z-20 animate-fadeIn max-h-52 overflow-y-auto no-scrollbar">
                     {languages.map(lang => (
                         <button 
                             key={lang.code}
