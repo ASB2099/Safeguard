@@ -23,6 +23,12 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
     const languageMap: { [key: string]: string } = {
         en: 'English',
         hi: 'Hindi',
+        mr: 'Marathi',
+        ta: 'Tamil',
+        te: 'Telugu',
+        ml: 'Malayalam',
+        ur: 'Urdu',
+        sa: 'Sanskrit',
     };
     const langName = languageMap[language] || 'English';
 
@@ -81,7 +87,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ navigateTo, theme, toggleTheme 
     try {
       const botResponse = await getBotResponse(userInput, getSystemInstruction());
       addMessage(botResponse, 'bot');
-    // FIX: Corrected a malformed try-catch block that was causing multiple parsing errors.
     } catch (error: any) {
       addMessage(t(error.message as any), 'bot');
     } finally {
