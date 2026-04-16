@@ -130,7 +130,7 @@ export const getBotResponse = async (
 ): Promise<string> => {
   try {
     const apiCall = () => getAi().models.generateContent({
-        model: "gemini-1.5-flash",
+        model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
             systemInstruction: systemInstruction,
@@ -152,7 +152,7 @@ export const getWeather = async (lat: number, lng: number, language: string) => 
   
   try {
     const apiCall = () => getAi().models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-3-flash-preview",
       contents: `Provide the current weather and a 5-item hourly forecast for latitude ${lat} and longitude ${lng}. Identify the city name. Also, provide a brief 'alertDescription' (max 15 words) and a boolean 'hasAlert' if there are any severe weather warnings like heavy rain, storms, or floods. If not, make 'alertDescription' an empty string and 'hasAlert' false. Provide all textual descriptions and the city name in ${languageName}.`,
       config: {
         responseMimeType: "application/json",
@@ -202,7 +202,7 @@ export const getNearbyServices = async (lat: number, lng: number, language: stri
     
     try {
         const apiCall = () => getAi().models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-3-flash-preview",
             contents: `List up to 8 nearby essential services (like 'Hospital', 'Police', 'Pharmacy', 'ATM', 'Restaurant', 'Hotel') within a 20 kilometer radius of latitude ${lat}, longitude ${lng}. Ensure the 'type' field is one of the requested categories. Provide all service names and types in ${languageName}.`,
             config: {
                 responseMimeType: "application/json",
@@ -249,7 +249,7 @@ export const getTravelRoutes = async (lat: number, lng: number, language: string
     
     try {
         const apiCall = () => getAi().models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-3-flash-preview",
             contents: `List 2 major travel hubs (one 'Train Station' and one 'Bus Station') near latitude ${lat}, longitude ${lng}. For each, provide a plausible travel path as an array of coordinates from the user's location. Provide all names and types in ${languageName}.`,
             config: {
                 responseMimeType: "application/json",
@@ -305,7 +305,7 @@ export const getSecureZones = async (lat: number, lng: number, language: string)
     
     try {
         const apiCall = () => getAi().models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-3-flash-preview",
             contents: `List up to 5 nearby secure zones within a 20km radius of latitude ${lat}, longitude ${lng}. These should be locations protected from natural disasters, like 'Community Shelter', 'Reinforced Building', or 'Emergency Bunker'. Provide a brief 'description' for each. Provide all names, types, and descriptions in ${languageName}.`,
             config: {
                 responseMimeType: "application/json",
@@ -353,7 +353,7 @@ export const getLocalGuides = async (lat: number, lng: number, language: string)
     
     try {
         const apiCall = () => getAi().models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-3-flash-preview",
             contents: `List up to 5 local guides near latitude ${lat}, longitude ${lng}. Include their name, a brief specialty (e.g., 'Trekking', 'Historical Tours'), a valid Indian contact number, and their approximate location. Provide all names and specialties in ${languageName}.`,
             config: {
                 responseMimeType: "application/json",
