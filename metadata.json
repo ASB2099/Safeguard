@@ -1,5 +1,5 @@
 {
-  "name": "Surakshify ",
+  "name": "Surakshify",
   "description": "A comprehensive travel safety application offering a chatbot assistant, location services, weather updates, and emergency support, all designed with a sleek and intuitive interface.",
   "requestFramePermissions": [
     "camera",

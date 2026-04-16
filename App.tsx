@@ -165,7 +165,6 @@ const AppContent: React.FC = () => {
 
   const toggleTheme = (event: React.MouseEvent) => {
     const isAppearanceTransition = 
-      // @ts-expect-error - startViewTransition is not in the default type definitions
       document.startViewTransition &&
       !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -182,7 +181,6 @@ const AppContent: React.FC = () => {
     document.documentElement.style.setProperty('--ripple-x', `${x}px`);
     document.documentElement.style.setProperty('--ripple-y', `${y}px`);
 
-    // @ts-expect-error
     const transition = document.startViewTransition(() => {
       setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
     });

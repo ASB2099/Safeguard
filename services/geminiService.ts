@@ -94,15 +94,13 @@ const withRetry = async <T>(apiCall: () => Promise<T>, maxRetries = 3, initialDe
 };
 
 let ai: GoogleGenAI | null = null;
-const API_KEY = "AIzaSyC5k7MSYfjKfvQBBq69d7SzBBb-51t5cWI";
-
 const getAi = () => {
   if (!ai) {
-    if (!API_KEY) {
-      // This will now use the hardcoded key, but the check remains as a safeguard.
-      throw new Error("API_KEY is not set");
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not set in the environment");
     }
-    ai = new GoogleGenAI({ apiKey: API_KEY });
+    ai = new GoogleGenAI({ apiKey });
   }
   return ai;
 };
