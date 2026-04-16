@@ -103,7 +103,7 @@ let ai: GoogleGenAI | null = null;
 const getAi = () => {
   if (!ai) {
     const apiKey = process.env.GEMINI_API_KEY;
-    console.log("Initializing Gemini AI. Key present:", !!apiKey);
+    console.log("Gemini Auth Check - Key available:", !!apiKey);
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY is not set in the environment");
     }
